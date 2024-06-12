@@ -53,7 +53,6 @@
       margin: 20px auto;
       width: 80%;
       max-width: 800px;
-      z-index: 1;
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -87,7 +86,7 @@
       background: linear-gradient(45deg, rgba(255, 182, 193, 0.8), rgba(255, 105, 180, 0.8));
       color: white;
       z-index: 2;
-      height: 90px; /* Adjusted footer height */
+      height: 78px; /* Adjusted footer height */
       display: flex;
       align-items: center;
     }
@@ -108,6 +107,26 @@
     }
     .content-detail p {
       text-align: left;
+    }
+    .toc {
+      position: fixed;
+      top: 60px;
+      right: 20px;
+      width: 200px;
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      padding: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .toc a {
+      display: block;
+      padding: 5px 0;
+      text-decoration: none;
+      color: black;
+    }
+    .toc a.active {
+      font-weight: bold;
+      font-size: 1.1rem;
     }
   </style>
 </head>
@@ -131,6 +150,11 @@
     <div class="content-detail" id="content">
       <!-- Markdown内容将在这里加载 -->
     </div>
+  </div>
+
+  <!-- Table of Contents -->
+  <div class="toc" id="toc">
+    <!-- 目录内容将在这里加载 -->
   </div>
 
   <!-- Footer -->
@@ -192,17 +216,46 @@
           .then(text => {
             const lines = text.split('\n');
             const contentDiv = document.getElementById('content');
+            const tocDiv = document.getElementById('toc');
+            let tocHtml = '';
+            let headingId = 0;
+
             lines.forEach(line => {
               if (line.startsWith('#')) {
-                contentDiv.innerHTML += `<h1>${line.replace(/^#+\s*/, '')}</h1>`;
-              } else if (line.startsWith('![')) {
-                const match = line.match(/\((.*?)\)/);
+                const headingText = line.replace(/^#+\s*/, '');
+                headingId++;
+                contentDiv.innerHTML += `<h1 id="heading${headingId}">${headingText}</h1>`;
+                tocHtml += `<a href="#heading${headingId}" id="toc-heading${headingId}">${headingText}</a>`;
+              } else if (line.includes('<img')) {
+                const match = line.match(/src="(.*?)"/);
                 if (match) {
                   contentDiv.innerHTML += `<img src="${match[1]}" alt="内容图片" style="max-width:600px; max-height:600px; width:auto; height:auto;">`;
                 }
               } else {
                 contentDiv.innerHTML += `<p>${line}</p>`;
               }
+            });
+
+            tocDiv.innerHTML = tocHtml;
+
+            // Update active heading on scroll
+            window.addEventListener('scroll', () => {
+              let activeId = '';
+              const headings = contentDiv.querySelectorAll('h1');
+              headings.forEach(heading => {
+                const rect = heading.getBoundingClientRect();
+                if (rect.top <= 100 && rect.bottom >= 100) {
+                  activeId = heading.id;
+                }
+              });
+
+              const tocLinks = tocDiv.querySelectorAll('a');
+              tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.id === `toc-${activeId}`) {
+                  link.classList.add('active');
+                }
+              });
             });
           })
           .catch(error => {

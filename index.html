@@ -57,7 +57,7 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start;
       align-items: center;
     }
     .content-module {
@@ -103,6 +103,34 @@
       margin-left: 20px;
       text-decoration: none;
     }
+    .search-container {
+      flex: auto;
+      display: flex;
+      justify-content: center;
+    }
+    .search-box {
+      background-color: white;
+      border-radius: 33px;
+      padding: 3px 5px;
+      display: flex;
+      align-items: center;
+      width: 400px; /* Adjusted width for smaller search box */
+    }
+    .search-input {
+      border: none;
+      outline: none;
+      width: 100%;
+      padding: 5px;
+    }
+    .search-button {
+      margin-left: 20px;
+      padding: 10px 10px;
+      border-radius: 33px;
+      border: none;
+      background-color: #ff69b4;
+      color: white;
+      cursor: pointer;
+    }
     .page-footer {
       position: fixed;
       bottom: 0;
@@ -111,7 +139,7 @@
       background: linear-gradient(45deg, rgba(255, 182, 193, 0.8), rgba(255, 105, 180, 0.8));
       color: white;
       z-index: 2;
-      height: 90px; /* Adjusted footer height */
+      height: 78px; /* Adjusted footer height */
       display: flex;
       align-items: center;
     }
@@ -133,6 +161,12 @@
     <div class="left">
       <a href="#" class="brand-logo">YDD羊弟弟的小屋</a>
     </div>
+    <div class="search-container">
+      <div class="search-box">
+        <input type="text" class="search-input" id="searchInput" placeholder="搜索内容">
+        <button class="search-button" onclick="searchContent()">→</button>
+      </div>
+    </div>
     <div class="right">
       <a href="#home">首页</a>
     </div>
@@ -145,8 +179,8 @@
   <!-- Main Content -->
   <div class="container content-wrapper" id="home">
     <div class="section">
-      <h1>欢迎来到羊弟弟的小屋</h1>
-      <p>我会在这里发表一些帖子</p>
+      <h4>欢迎来到羊弟弟的小屋</h4>
+      <p>碎碎念</p>
       <!-- Content modules will be dynamically inserted here -->
       <div id="content-modules"></div>
     </div>
@@ -260,6 +294,20 @@
           console.error('Error fetching content list:', error);
         });
     });
+
+    function searchContent() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const modules = document.querySelectorAll('.content-module');
+      modules.forEach(module => {
+        const title = module.querySelector('h2').innerText.toLowerCase();
+        const description = module.querySelector('p').innerText.toLowerCase();
+        if (title.includes(query) || description.includes(query)) {
+          module.style.display = 'flex';
+        } else {
+          module.style.display = 'none';
+        }
+      });
+    }
   </script>
 </body>
 </html>
