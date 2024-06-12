@@ -6,10 +6,11 @@
   <title>YDD羊弟弟的小屋</title>
   <!-- Compiled and minified CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <link id="favicon" rel="icon" href="">
   <style>
     body {
       margin: 0;
-      padding-top: 35px; /* Add padding to separate content from the fixed header */
+      padding-top: 50px; /* Add padding to separate content from the fixed header */
       padding-bottom: 60px; /* Add padding to separate content from the fixed footer */
       display: flex;
       flex-direction: column;
@@ -137,6 +138,19 @@
       align-items: center;
       justify-content: center;
     }
+    .toggle-button {
+      margin-left: 10px;
+      padding: 4px 12px;
+      border-radius: 22px;
+      border: none;
+      background-color: #ff69b4;
+      color: white;
+      cursor: pointer;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
     .page-footer {
       position: fixed;
       bottom: 0;
@@ -162,8 +176,34 @@
     .footer-section h5 {
       margin-bottom: 2px; /* Adjusted margin to reduce spacing */
     }
+    .night-mode .upper-footer {
+      background: linear-gradient(45deg, rgba(0, 0, 0, 0.8), rgba(20, 20, 40, 0.8));
+    }
+    .night-mode .page-footer {
+      background: linear-gradient(45deg, rgba(0, 0, 0, 0.8), rgba(20, 20, 40, 0.8));
+    }
+    .night-mode .content-wrapper {
+      background-color: rgba(0, 0, 0, 0.8);
+      color: #d3d3d3;
+    }
+    .night-mode .content-module {
+      background-color: rgba(0, 0, 0, 0.9);
+      color: #d3d3d3;
+    }
+    .night-mode .search-box {
+      background-color: rgba(50, 50, 50, 0.8);
+      color: #d3d3d3;
+    }
+    .night-mode .search-input {
+      background-color: transparent;
+      color: #d3d3d3;
+    }
+    .night-mode .search-button,
+    .night-mode .toggle-button {
+      background-color: rgba(50, 50, 50, 0.8);
+      color: #d3d3d3;
+    }
   </style>
-  <link id="favicon" rel="icon" href="">
 
   <!-- GitHub Avatar Fetching Script -->
   <script>
@@ -176,6 +216,10 @@
         })
         .catch(error => console.error('Error fetching GitHub user avatar:', error));
     });
+
+    function toggleNightMode() {
+      document.body.classList.toggle('night-mode');
+    }
   </script>
 </head>
 <body>
@@ -191,6 +235,7 @@
       </div>
     </div>
     <div class="right">
+      <button class="toggle-button" onclick="toggleNightMode()">切换昼夜模式</button>
       <a href="#home" onclick="resetSearch()">首页</a>
     </div>
   </div>
