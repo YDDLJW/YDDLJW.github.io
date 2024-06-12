@@ -4,5 +4,4 @@
 
 更多内容...
 
-![内容图片](https://raw.githubusercontent.com/YDDLJW/YDDLJW.github.io/main/static/background_1.png
-)
+<img alt="内容图片" src="https://raw.githubusercontent.com/YDDLJW/YDDLJW.github.io/main/static/background_1.png" width="400" height="300"/>
