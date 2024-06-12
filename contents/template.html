@@ -87,6 +87,9 @@
       background: linear-gradient(45deg, rgba(255, 182, 193, 0.8), rgba(255, 105, 180, 0.8));
       color: white;
       z-index: 2;
+      height: 60px; /* Adjusted footer height */
+      display: flex;
+      align-items: center;
     }
     .footer-content {
       display: flex;
@@ -95,6 +98,7 @@
     .footer-section {
       flex: 1;
       padding: 10px;
+      font-size: 0.9rem; /* Adjusted font size */
     }
     .content-detail {
       width: 100%;
@@ -117,8 +121,6 @@
     </div>
     <div class="right">
       <a href="../index.html#home">首页</a>
-      <a href="../index.html#about">关于</a>
-      <a href="../index.html#contact">联系</a>
     </div>
   </div>
 
@@ -129,7 +131,7 @@
   <!-- Main Content -->
   <div class="container content-wrapper">
     <div class="content-detail" id="content">
-      <!-- Markdown content will be loaded here -->
+      <!-- Markdown内容将在这里加载 -->
     </div>
   </div>
 
@@ -147,7 +149,7 @@
     </div>
     <div class="footer-content">
       <div class="container">
-        © 2024 YDD羊弟弟的网站
+        © 2024 YDD羊弟弟的小屋
       </div>
     </div>
   </footer>
@@ -155,7 +157,7 @@
   <!-- Compiled and minified JavaScript -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <!-- Markdown parsing library -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.10/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@4.0.10/marked.min.js"></script>
 
   <!-- Initialize JavaScript Components -->
   <script>
@@ -165,28 +167,35 @@
       var instances = M.Modal.init(elems);
 
       // Array of background image URLs
-      const images = [
-        '../static/background_1.png',
-        '../static/background_2.png',
-        // Add more image URLs as needed
-      ];
+      fetch('https://api.github.com/repos/YDDLJW/YDDLJW.github.io/contents/static')
+        .then(response => response.json())
+        .then(data => {
+          const images = data.map(file => file.download_url);
+          let currentIndex = 0;
+          const backgroundImage = document.getElementById('backgroundImage');
+          backgroundImage.src = images[currentIndex];
 
-      let currentIndex = 0;
-      const backgroundImage = document.getElementById('backgroundImage');
-      backgroundImage.src = images[currentIndex];
-
-      backgroundImage.addEventListener('animationiteration', () => {
-        currentIndex = (currentIndex + 1) % images.length;
-        backgroundImage.src = images[currentIndex];
-      });
+          backgroundImage.addEventListener('animationiteration', () => {
+            currentIndex = (currentIndex + 1) % images.length;
+            backgroundImage.src = images[currentIndex];
+          });
+        });
 
       // Load Markdown content
       const contentUrl = new URLSearchParams(window.location.search).get('content');
       if (contentUrl) {
-        fetch(contentUrl)
-          .then(response => response.text())
+        fetch(`https://raw.githubusercontent.com/YDDLJW/YDDLJW.github.io/main/contents/${contentUrl}`)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.text();
+          })
           .then(text => {
             document.getElementById('content').innerHTML = marked.parse(text);
+          })
+          .catch(error => {
+            document.getElementById('content').innerHTML = `<p style="color: red;">Error loading content: ${error.message}</p>`;
           });
       }
     });

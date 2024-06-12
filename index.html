@@ -73,7 +73,8 @@
     }
     .content-module img {
       border-radius: 10px;
-      width: 30%;
+      max-width: 150px;
+      max-height: 150px;
       margin-right: 20px;
     }
     .content-module h2 {
@@ -110,6 +111,9 @@
       background: linear-gradient(45deg, rgba(255, 182, 193, 0.8), rgba(255, 105, 180, 0.8));
       color: white;
       z-index: 2;
+      height: 60px; /* Adjusted footer height */
+      display: flex;
+      align-items: center;
     }
     .footer-content {
       display: flex;
@@ -118,6 +122,7 @@
     .footer-section {
       flex: 1;
       padding: 10px;
+      font-size: 0.9rem; /* Adjusted font size */
     }
   </style>
 </head>
@@ -129,13 +134,11 @@
     </div>
     <div class="right">
       <a href="#home">首页</a>
-      <a href="#about">关于</a>
-      <a href="#contact">联系</a>
     </div>
   </div>
 
   <div class="background-container">
-    <img id="backgroundImage" src="static/background_1.png" alt="Background" class="background-image">
+    <img id="backgroundImage" src="" alt="Background" class="background-image">
   </div>
 
   <!-- Main Content -->
@@ -143,24 +146,8 @@
     <div class="section">
       <h1>欢迎来到羊弟弟的小屋</h1>
       <p>这是一个使用Materialize框架创建的简单示例网站。</p>
-      <!-- Example content modules -->
-      <a href="contents/template.html?content=contents/content1.md" class="content-module">
-        <img src="https://via.placeholder.com/150" alt="缩略图">
-        <div>
-          <h2>内容模块 1</h2>
-          <p>描述内容 1</p>
-          <p>更多描述内容...</p>
-        </div>
-      </a>
-      <a href="contents/template.html?content=contents/content2.md" class="content-module">
-        <img src="https://via.placeholder.com/150" alt="缩略图">
-        <div>
-          <h2>内容模块 2</h2>
-          <p>描述内容 2</p>
-          <p>更多描述内容...</p>
-        </div>
-      </a>
-      <!-- Add more content modules as needed -->
+      <!-- Content modules will be dynamically inserted here -->
+      <div id="content-modules"></div>
     </div>
   </div>
 
@@ -189,7 +176,7 @@
     </div>
     <div class="footer-content">
       <div class="container">
-        © 2024 YDD羊弟弟的网站
+        © 2024 YDD羊弟弟的小屋
       </div>
     </div>
   </footer>
@@ -203,21 +190,69 @@
       var elems = document.querySelectorAll('.modal');
       var instances = M.Modal.init(elems);
 
-      // Array of background image URLs
-      const images = [
-        'static/background_1.png',
-        'static/background_2.png',
-        // Add more image URLs as needed
-      ];
+      // Fetching all background images from the static directory
+      fetch('https://api.github.com/repos/YDDLJW/YDDLJW.github.io/contents/static')
+        .then(response => response.json())
+        .then(data => {
+          const images = data.map(file => file.download_url);
+          let currentIndex = 0;
+          const backgroundImage = document.getElementById('backgroundImage');
+          backgroundImage.src = images[currentIndex];
 
-      let currentIndex = 0;
-      const backgroundImage = document.getElementById('backgroundImage');
-      backgroundImage.src = images[currentIndex];
+          backgroundImage.addEventListener('animationiteration', () => {
+            currentIndex = (currentIndex + 1) % images.length;
+            backgroundImage.src = images[currentIndex];
+          });
+        });
 
-      backgroundImage.addEventListener('animationiteration', () => {
-        currentIndex = (currentIndex + 1) % images.length;
-        backgroundImage.src = images[currentIndex];
-      });
+      // Dynamically load content modules
+      const contentModules = document.getElementById('content-modules');
+
+      fetch('https://api.github.com/repos/YDDLJW/YDDLJW.github.io/contents/contents')
+        .then(response => response.json())
+        .then(files => {
+          files.forEach((file, index) => {
+            if (file.name.endsWith('.md')) {
+              fetch(file.download_url)
+                .then(response => response.text())
+                .then(text => {
+                  const lines = text.split('\n');
+                  let imageSrc = "https://via.placeholder.com/150";
+                  let title = `内容模块 ${index + 1}`;
+                  let description = "";
+
+                  for (let line of lines) {
+                    if (line.startsWith('![')) {
+                      const match = line.match(/\((.*?)\)/);
+                      if (match) {
+                        imageSrc = match[1];
+                      }
+                    } else if (line.startsWith('#')) {
+                      title = line.replace(/^#+\s*/, '');
+                    } else if (line.trim() !== "") {
+                      description = line.trim().substring(0, 100) + '...';
+                      break;
+                    }
+                  }
+
+                  const module = document.createElement('a');
+                  module.href = `contents/template.html?content=${file.name}`;
+                  module.className = 'content-module';
+                  module.innerHTML = `
+                    <img src="${imageSrc}" alt="缩略图">
+                    <div>
+                      <h2>${title}</h2>
+                      <p>${description}</p>
+                    </div>
+                  `;
+                  contentModules.appendChild(module);
+                });
+            }
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching content list:', error);
+        });
     });
   </script>
 </body>
