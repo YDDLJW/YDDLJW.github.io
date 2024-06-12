@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Materialize Website</title>
+  <title>YDD羊弟弟的小屋</title>
   <!-- Compiled and minified CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
   <style>
@@ -12,7 +12,7 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start;
       align-items: center;
       height: 100vh;
       background-color: #f0f0f0;
@@ -55,60 +55,82 @@
       z-index: 1;
       width: 80%;
     }
+    .upper-footer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background-color: #333;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      z-index: 2;
+    }
+    .upper-footer a {
+      color: white;
+      margin-left: 20px;
+      text-decoration: none;
+    }
+    .page-footer {
+      width: 100%;
+      position: relative;
+      bottom: 0;
+    }
   </style>
 </head>
 <body>
+
+  <div class="upper-footer">
+    <div class="left">
+      <a href="#" class="brand-logo">YDD羊弟弟的小屋</a>
+    </div>
+    <div class="right">
+      <a href="#home">首页</a>
+      <a href="#about">关于</a>
+      <a href="#contact">联系</a>
+    </div>
+  </div>
 
   <div class="background-container">
     <img id="backgroundImage" src="" alt="Background" class="background-image">
   </div>
 
-  <!-- Navigation -->
-  <nav>
-    <div class="nav-wrapper">
-      <a href="#" class="brand-logo">My Site</a>
-      <ul id="nav-mobile" class="right hide-on-med-and-down">
-        <li><a href="#home">Home</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
-    </div>
-  </nav>
-
   <!-- Main Content -->
   <div class="container content-wrapper" id="home">
     <div class="section">
-      <h1>Welcome to My Website</h1>
-      <p>This is a simple example of a Materialize website.</p>
+      <h1>欢迎来到羊弟弟的小屋</h1>
+      <p>这是一个使用Materialize框架创建的简单示例网站。</p>
       <!-- Trigger the modal with a button -->
-      <a class="waves-effect waves-light btn modal-trigger" href="#modal1">Open Modal</a>
+      <a class="waves-effect waves-light btn modal-trigger" href="#modal1">打开模态框</a>
     </div>
   </div>
 
   <!-- About Section -->
   <div class="container content-wrapper" id="about">
     <div class="section">
-      <h2>About Me</h2>
-      <p>Here you can include information about yourself.</p>
+      <h2>关于我</h2>
+      <p>一个普通的大学生</p>
     </div>
   </div>
 
   <!-- Contact Section -->
   <div class="container content-wrapper" id="contact">
     <div class="section">
-      <h2>Contact</h2>
-      <p>Here you can include your contact information.</p>
+      <h2>联系</h2>
+      <p>tydd521521521@gmail.com</p>
     </div>
   </div>
 
   <!-- Modal Structure -->
   <div id="modal1" class="modal">
     <div class="modal-content">
-      <h4>Modal Header</h4>
-      <p>A bunch of text</p>
+      <h4>模态框标题</h4>
+      <p>一些文本内容</p>
     </div>
     <div class="modal-footer">
-      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">同意</a>
     </div>
   </div>
 
@@ -117,14 +139,14 @@
     <div class="container">
       <div class="row">
         <div class="col l6 s12">
-          <h5 class="white-text">Footer Content</h5>
-          <p class="grey-text text-lighten-4">You can use rows and columns here to organize your footer content.</p>
+          <h5 class="white-text">页脚内容</h5>
+          <p class="grey-text text-lighten-4">你可以在这里使用行和列来组织你的页脚内容。</p>
         </div>
       </div>
     </div>
     <div class="footer-copyright">
       <div class="container">
-      © 2024 My Materialize Website
+      © 2024 YDD羊弟弟的网站
       </div>
     </div>
   </footer>
