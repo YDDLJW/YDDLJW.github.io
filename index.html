@@ -114,6 +114,7 @@
       padding: 3px 5px;
       display: flex;
       align-items: center;
+      height: 30px; /* Adjusted height for smaller search box */
       width: 400px; /* Adjusted width for smaller search box */
     }
     .search-input {
@@ -121,15 +122,17 @@
       outline: none;
       width: 100%;
       padding: 5px;
+      height: 100%;
     }
     .search-button {
-      margin-left: 20px;
-      padding: 10px 10px;
+      margin-left: 10px;
+      padding: 5px 10px; /* Adjusted padding for smaller search button */
       border-radius: 33px;
       border: none;
       background-color: #ff69b4;
       color: white;
       cursor: pointer;
+      height: 100%;
     }
     .page-footer {
       position: fixed;
@@ -159,16 +162,16 @@
 
   <div class="upper-footer">
     <div class="left">
-      <a href="#" class="brand-logo">YDD羊弟弟的小屋</a>
+      <a href="#" class="brand-logo" onclick="resetSearch()">YDD羊弟弟的小屋</a>
     </div>
     <div class="search-container">
       <div class="search-box">
-        <input type="text" class="search-input" id="searchInput" placeholder="搜索内容">
+        <input type="text" class="search-input" id="searchInput" placeholder="搜索内容" onkeydown="handleKeyDown(event)">
         <button class="search-button" onclick="searchContent()">→</button>
       </div>
     </div>
     <div class="right">
-      <a href="#home">首页</a>
+      <a href="#home" onclick="resetSearch()">首页</a>
     </div>
   </div>
 
@@ -221,6 +224,8 @@
 
   <!-- Initialize JavaScript Components -->
   <script>
+    let contentData = []; // Store content data for search
+
     document.addEventListener('DOMContentLoaded', function() {
       var elems = document.querySelectorAll('.modal');
       var instances = M.Modal.init(elems);
@@ -246,15 +251,16 @@
       fetch('https://api.github.com/repos/YDDLJW/YDDLJW.github.io/contents/contents')
         .then(response => response.json())
         .then(files => {
-          files.forEach((file, index) => {
+          const contentPromises = files.map((file, index) => {
             if (file.name.endsWith('.md')) {
-              fetch(file.download_url)
+              return fetch(file.download_url)
                 .then(response => response.text())
                 .then(text => {
                   const lines = text.split('\n');
                   let imageSrc = "https://via.placeholder.com/150";
                   let title = `内容模块 ${index + 1}`;
                   let description = "";
+                  let content = text;
 
                   for (let line of lines) {
                     if (line.includes('<img')) {
@@ -286,9 +292,15 @@
                     </div>
                   `;
                   contentModules.appendChild(module);
+
+                  contentData.push({ title, description, content, element: module });
+
+                  return module;
                 });
             }
           });
+
+          return Promise.all(contentPromises);
         })
         .catch(error => {
           console.error('Error fetching content list:', error);
@@ -297,16 +309,24 @@
 
     function searchContent() {
       const query = document.getElementById('searchInput').value.toLowerCase();
-      const modules = document.querySelectorAll('.content-module');
-      modules.forEach(module => {
-        const title = module.querySelector('h2').innerText.toLowerCase();
-        const description = module.querySelector('p').innerText.toLowerCase();
-        if (title.includes(query) || description.includes(query)) {
-          module.style.display = 'flex';
+      contentData.forEach(({ title, description, content, element }) => {
+        if (title.toLowerCase().includes(query) || description.toLowerCase().includes(query) || content.toLowerCase().includes(query)) {
+          element.style.display = 'flex';
         } else {
-          module.style.display = 'none';
+          element.style.display = 'none';
         }
       });
+    }
+
+    function handleKeyDown(event) {
+      if (event.key === 'Enter') {
+        searchContent();
+      }
+    }
+
+    function resetSearch() {
+      document.getElementById('searchInput').value = '';
+      searchContent();
     }
   </script>
 </body>
