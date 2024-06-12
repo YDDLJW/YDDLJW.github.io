@@ -100,16 +100,13 @@
       padding: 10px;
       font-size: 0.9rem; /* Adjusted font size */
     }
-    .content-detail {
-      width: 100%;
+    .content-detail h1,
+    .content-detail img {
       text-align: center;
-    }
-    .content-detail h1 {
-      margin: 0;
-      font-size: 2rem;
+      margin: 0 auto;
     }
     .content-detail p {
-      margin: 10px 0;
+      text-align: left;
     }
   </style>
 </head>
@@ -192,7 +189,20 @@
             return response.text();
           })
           .then(text => {
-            document.getElementById('content').innerHTML = marked.parse(text);
+            const lines = text.split('\n');
+            const contentDiv = document.getElementById('content');
+            lines.forEach(line => {
+              if (line.startsWith('#')) {
+                contentDiv.innerHTML += `<h1>${line.replace(/^#+\s*/, '')}</h1>`;
+              } else if (line.startsWith('![')) {
+                const match = line.match(/\((.*?)\)/);
+                if (match) {
+                  contentDiv.innerHTML += `<img src="${match[1]}" alt="内容图片" style="max-width:600px; max-height:600px; width:auto; height:auto;">`;
+                }
+              } else {
+                contentDiv.innerHTML += `<p>${line}</p>`;
+              }
+            });
           })
           .catch(error => {
             document.getElementById('content').innerHTML = `<p style="color: red;">Error loading content: ${error.message}</p>`;
