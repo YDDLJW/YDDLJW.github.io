@@ -130,7 +130,7 @@
       padding: 4px 12px; /* Adjusted padding for smaller search button */
       border-radius: 22px;
       border: none;
-      background-color: #ff69b4;
+      background-color: #faa2ce;
       color: white;
       cursor: pointer;
       height: 100%;
@@ -215,10 +215,45 @@
           faviconLink.href = data.avatar_url;
         })
         .catch(error => console.error('Error fetching GitHub user avatar:', error));
+
+      const searchParams = new URLSearchParams(window.location.search);
+      const query = searchParams.get('search');
+      if (query) {
+        document.getElementById('searchInput').value = query;
+        searchContent(query);
+      }
+
+      const nightMode = localStorage.getItem('nightMode');
+      if (nightMode === 'true') {
+        document.body.classList.add('night-mode');
+      }
     });
 
     function toggleNightMode() {
       document.body.classList.toggle('night-mode');
+      localStorage.setItem('nightMode', document.body.classList.contains('night-mode'));
+    }
+
+    function searchContent(query) {
+      contentData.forEach(({ title, description, content, element }) => {
+        if (title.toLowerCase().includes(query) || description.toLowerCase().includes(query) || content.toLowerCase().includes(query)) {
+          element.style.display = 'flex';
+        } else {
+          element.style.display = 'none';
+        }
+      });
+    }
+
+    function handleSearch() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      searchContent(query);
+      window.history.replaceState(null, '', `?search=${encodeURIComponent(query)}`);
+    }
+
+    function resetSearch() {
+      document.getElementById('searchInput').value = '';
+      searchContent('');
+      window.history.replaceState(null, '', window.location.pathname);
     }
   </script>
 </head>
@@ -231,7 +266,7 @@
     <div class="search-container">
       <div class="search-box">
         <input type="text" class="search-input" id="searchInput" placeholder="搜索内容" onkeydown="handleKeyDown(event)">
-        <button class="search-button" onclick="searchContent()">→</button>
+        <button class="search-button" onclick="handleSearch()">→</button>
       </div>
     </div>
     <div class="right">
@@ -387,8 +422,7 @@
         });
     });
 
-    function searchContent() {
-      const query = document.getElementById('searchInput').value.toLowerCase();
+    function searchContent(query) {
       contentData.forEach(({ title, description, content, element }) => {
         if (title.toLowerCase().includes(query) || description.toLowerCase().includes(query) || content.toLowerCase().includes(query)) {
           element.style.display = 'flex';
@@ -400,13 +434,20 @@
 
     function handleKeyDown(event) {
       if (event.key === 'Enter') {
-        searchContent();
+        handleSearch();
       }
+    }
+
+    function handleSearch() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      searchContent(query);
+      window.history.replaceState(null, '', `?search=${encodeURIComponent(query)}`);
     }
 
     function resetSearch() {
       document.getElementById('searchInput').value = '';
-      searchContent();
+      searchContent('');
+      window.history.replaceState(null, '', window.location.pathname);
     }
   </script>
 </body>

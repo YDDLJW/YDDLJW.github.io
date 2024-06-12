@@ -10,7 +10,7 @@
   <style>
     body {
       margin: 0;
-      padding-top: 60px; /* Add padding to separate content from the fixed header */
+      padding-top: 50px; /* Add padding to separate content from the fixed header */
       padding-bottom: 60px; /* Add padding to separate content from the fixed footer */
       display: flex;
       flex-direction: column;
@@ -79,6 +79,53 @@
       margin-left: 20px;
       text-decoration: none;
     }
+    .search-container {
+      flex: auto;
+      display: flex;
+      justify-content: center;
+    }
+    .search-box {
+      background-color: white;
+      border-radius: 33px;
+      padding: 0 10px; /* Adjusted padding for better fit */
+      display: flex;
+      align-items: center;
+      height: 32px; /* Adjusted height for smaller search box */
+      width: 400px; /* Adjusted width for smaller search box */
+    }
+    .search-input {
+      border: none;
+      outline: none;
+      width: 100%;
+      padding: 5px;
+      height: 100%;
+    }
+    .search-button {
+      margin-left: 10px;
+      padding: 4px 12px; /* Adjusted padding for smaller search button */
+      border-radius: 22px;
+      border: none;
+      background-color: #faa2ce;
+      color: white;
+      cursor: pointer;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .toggle-button {
+      margin-left: 10px;
+      padding: 4px 12px;
+      border-radius: 22px;
+      border: none;
+      background-color: #ff69b4;
+      color: white;
+      cursor: pointer;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
     .page-footer {
       position: fixed;
       bottom: 0;
@@ -101,23 +148,22 @@
       padding: 10px;
       font-size: 0.8rem; /* Adjusted font size */
     }
-    .content-detail h1,
-    .content-detail img {
-      text-align: center;
-      margin: 0 auto;
-    }
-    .content-detail p {
-      text-align: left;
+    .footer-section h5 {
+      margin-bottom: 2px; /* Adjusted margin to reduce spacing */
     }
     .toc {
       position: fixed;
       top: 60px;
-      right: 20px;
+      right: -180px; /* Hide half of the TOC offscreen */
       width: 200px;
       background-color: rgba(255, 255, 255, 0.9);
       border-radius: 10px;
       padding: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: right 0.5s; /* Smooth transition for sliding in and out */
+    }
+    .toc:hover {
+      right: 0; /* Slide the TOC fully into view on hover */
     }
     .toc a {
       display: block;
@@ -139,7 +185,23 @@
       background-color: rgba(0, 0, 0, 0.8);
       color: #d3d3d3;
     }
+    .night-mode .content-detail {
+      color: #d3d3d3;
+    }
     .night-mode .toc {
+      background-color: rgba(50, 50, 50, 0.8);
+      color: #d3d3d3;
+    }
+    .night-mode .search-box {
+      background-color: rgba(50, 50, 50, 0.8);
+      color: #d3d3d3;
+    }
+    .night-mode .search-input {
+      background-color: transparent;
+      color: #d3d3d3;
+    }
+    .night-mode .search-button,
+    .night-mode .toggle-button {
       background-color: rgba(50, 50, 50, 0.8);
       color: #d3d3d3;
     }
@@ -155,10 +217,38 @@
           faviconLink.href = data.avatar_url;
         })
         .catch(error => console.error('Error fetching GitHub user avatar:', error));
+
+      const nightMode = localStorage.getItem('nightMode');
+      if (nightMode === 'true') {
+        document.body.classList.add('night-mode');
+      }
+
+      const searchParams = new URLSearchParams(window.location.search);
+      const searchQuery = searchParams.get('search');
+      if (searchQuery) {
+        document.getElementById('searchInput').value = searchQuery;
+        searchContent(searchQuery);
+      }
     });
 
     function toggleNightMode() {
       document.body.classList.toggle('night-mode');
+      localStorage.setItem('nightMode', document.body.classList.contains('night-mode'));
+    }
+
+    function handleKeyDown(event) {
+      if (event.key === 'Enter') {
+        handleSearch();
+      }
+    }
+
+    function handleSearch() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      window.location.href = `../index.html?search=${encodeURIComponent(query)}`;
+    }
+
+    function resetSearch() {
+      window.location.href = '../index.html';
     }
   </script>
 </head>
@@ -166,11 +256,17 @@
 
   <div class="upper-footer">
     <div class="left">
-      <a href="../index.html" class="brand-logo">YDD羊弟弟的小屋</a>
+      <a href="../index.html" class="brand-logo" onclick="resetSearch()">YDD羊弟弟的小屋</a>
+    </div>
+    <div class="search-container">
+      <div class="search-box">
+        <input type="text" class="search-input" id="searchInput" placeholder="搜索内容" onkeydown="handleKeyDown(event)">
+        <button class="search-button" onclick="handleSearch()">→</button>
+      </div>
     </div>
     <div class="right">
       <button class="toggle-button" onclick="toggleNightMode()">切换昼夜模式</button>
-      <a href="../index.html#home">首页</a>
+      <a href="../index.html#home" onclick="resetSearch()">首页</a>
     </div>
   </div>
 
