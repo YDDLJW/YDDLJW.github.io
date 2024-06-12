@@ -4,4 +4,5 @@
 
 更多内容...
 
-![内容图片](https://github.com/YDDLJW/YDDLJW.github.io/blob/main/static/background_1.png)
+![内容图片](https://raw.githubusercontent.com/YDDLJW/YDDLJW.github.io/main/static/background_1.png
+)
