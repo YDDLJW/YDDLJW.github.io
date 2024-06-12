@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YDD羊弟弟的小屋</title>
+  <title>YDD羊弟弟的小屋 - 内容详情</title>
   <!-- Compiled and minified CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
   <style>
@@ -60,29 +60,6 @@
       justify-content: center;
       align-items: center;
     }
-    .content-module {
-      background-color: rgba(255, 255, 255, 0.9);
-      border-radius: 10px;
-      margin: 10px 0;
-      padding: 15px;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      text-decoration: none;
-      color: black;
-    }
-    .content-module img {
-      border-radius: 10px;
-      width: 30%;
-      margin-right: 20px;
-    }
-    .content-module h2 {
-      margin: 0;
-      font-size: 1.5rem;
-    }
-    .content-module p {
-      margin: 5px 0;
-    }
     .upper-footer {
       position: fixed;
       top: 0;
@@ -119,59 +96,40 @@
       flex: 1;
       padding: 10px;
     }
+    .content-detail {
+      width: 100%;
+      text-align: center;
+    }
+    .content-detail h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+    .content-detail p {
+      margin: 10px 0;
+    }
   </style>
 </head>
 <body>
 
   <div class="upper-footer">
     <div class="left">
-      <a href="#" class="brand-logo">YDD羊弟弟的小屋</a>
+      <a href="../index.html" class="brand-logo">YDD羊弟弟的小屋</a>
     </div>
     <div class="right">
-      <a href="#home">首页</a>
-      <a href="#about">关于</a>
-      <a href="#contact">联系</a>
+      <a href="../index.html#home">首页</a>
+      <a href="../index.html#about">关于</a>
+      <a href="../index.html#contact">联系</a>
     </div>
   </div>
 
   <div class="background-container">
-    <img id="backgroundImage" src="static/background_1.png" alt="Background" class="background-image">
+    <img id="backgroundImage" src="" alt="Background" class="background-image">
   </div>
 
   <!-- Main Content -->
-  <div class="container content-wrapper" id="home">
-    <div class="section">
-      <h1>欢迎来到羊弟弟的小屋</h1>
-      <p>这是一个使用Materialize框架创建的简单示例网站。</p>
-      <!-- Example content modules -->
-      <a href="contents/template.html?content=contents/content1.md" class="content-module">
-        <img src="https://via.placeholder.com/150" alt="缩略图">
-        <div>
-          <h2>内容模块 1</h2>
-          <p>描述内容 1</p>
-          <p>更多描述内容...</p>
-        </div>
-      </a>
-      <a href="contents/template.html?content=contents/content2.md" class="content-module">
-        <img src="https://via.placeholder.com/150" alt="缩略图">
-        <div>
-          <h2>内容模块 2</h2>
-          <p>描述内容 2</p>
-          <p>更多描述内容...</p>
-        </div>
-      </a>
-      <!-- Add more content modules as needed -->
-    </div>
-  </div>
-
-  <!-- Modal Structure -->
-  <div id="modal1" class="modal">
-    <div class="modal-content">
-      <h4>模态框标题</h4>
-      <p>一些文本内容</p>
-    </div>
-    <div class="modal-footer">
-      <a href="#!" class="modal-close waves-effect waves-green btn-flat">同意</a>
+  <div class="container content-wrapper">
+    <div class="content-detail" id="content">
+      <!-- Markdown content will be loaded here -->
     </div>
   </div>
 
@@ -196,17 +154,20 @@
 
   <!-- Compiled and minified JavaScript -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <!-- Markdown parsing library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.10/marked.min.js"></script>
 
   <!-- Initialize JavaScript Components -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      // Initialize modal
       var elems = document.querySelectorAll('.modal');
       var instances = M.Modal.init(elems);
 
       // Array of background image URLs
       const images = [
-        'static/background_1.png',
-        'static/background_2.png',
+        '../static/background_1.png',
+        '../static/background_2.png',
         // Add more image URLs as needed
       ];
 
@@ -218,6 +179,16 @@
         currentIndex = (currentIndex + 1) % images.length;
         backgroundImage.src = images[currentIndex];
       });
+
+      // Load Markdown content
+      const contentUrl = new URLSearchParams(window.location.search).get('content');
+      if (contentUrl) {
+        fetch(contentUrl)
+          .then(response => response.text())
+          .then(text => {
+            document.getElementById('content').innerHTML = marked.parse(text);
+          });
+      }
     });
   </script>
 </body>
