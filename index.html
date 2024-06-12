@@ -11,6 +11,7 @@
       margin: 0;
       overflow: hidden;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
@@ -30,7 +31,7 @@
       width: 125%; /* To ensure the image covers the whole viewport during the movement */
       height: 125%;
       opacity: 0.5;
-      animation: moveCamera 20s infinite linear;
+      animation: moveCamera 40s infinite linear; /* Slowed down the animation */
     }
     @keyframes moveCamera {
       0%, 100% {
@@ -50,15 +51,16 @@
       background-color: rgba(255, 255, 255, 0.8);
       padding: 20px;
       border-radius: 10px;
-      margin-top: 20px;
+      margin: 20px;
       z-index: 1;
+      width: 80%;
     }
   </style>
 </head>
 <body>
 
   <div class="background-container">
-    <img src="https://raw.githubusercontent.com/YDDLJW/YDDLJW.github.io/main/background_1.png" alt="Background" class="background-image">
+    <img id="backgroundImage" src="" alt="Background" class="background-image">
   </div>
 
   <!-- Navigation -->
@@ -135,6 +137,22 @@
     document.addEventListener('DOMContentLoaded', function() {
       var elems = document.querySelectorAll('.modal');
       var instances = M.Modal.init(elems);
+
+      // Array of background image URLs
+      const images = [
+        'https://raw.githubusercontent.com/YDDLJW/YDDLJW.github.io/main/static/background_1.png',
+        'https://raw.githubusercontent.com/YDDLJW/YDDLJW.github.io/main/static/background_2.png',
+        // Add more image URLs as needed
+      ];
+
+      let currentIndex = 0;
+      const backgroundImage = document.getElementById('backgroundImage');
+      backgroundImage.src = images[currentIndex];
+
+      backgroundImage.addEventListener('animationiteration', () => {
+        currentIndex = (currentIndex + 1) % images.length;
+        backgroundImage.src = images[currentIndex];
+      });
     });
   </script>
 </body>
