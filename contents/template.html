@@ -6,6 +6,7 @@
   <title>YDD羊弟弟的小屋 - 内容详情</title>
   <!-- Compiled and minified CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <link id="favicon" rel="icon" href="">
   <style>
     body {
       margin: 0;
@@ -129,6 +130,19 @@
       font-size: 1.1rem;
     }
   </style>
+
+  <!-- GitHub Avatar Fetching Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      fetch('https://api.github.com/users/YDDLJW')
+        .then(response => response.json())
+        .then(data => {
+          const faviconLink = document.getElementById('favicon');
+          faviconLink.href = data.avatar_url;
+        })
+        .catch(error => console.error('Error fetching GitHub user avatar:', error));
+    });
+  </script>
 </head>
 <body>
 

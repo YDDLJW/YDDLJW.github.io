@@ -115,7 +115,7 @@
       display: flex;
       align-items: center;
       height: 32px; /* Adjusted height for smaller search box */
-      width: 300px; /* Adjusted width for smaller search box */
+      width: 400px; /* Adjusted width for smaller search box */
     }
     .search-input {
       border: none;
@@ -163,6 +163,20 @@
       margin-bottom: 2px; /* Adjusted margin to reduce spacing */
     }
   </style>
+  <link id="favicon" rel="icon" href="">
+
+  <!-- GitHub Avatar Fetching Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      fetch('https://api.github.com/users/YDDLJW')
+        .then(response => response.json())
+        .then(data => {
+          const faviconLink = document.getElementById('favicon');
+          faviconLink.href = data.avatar_url;
+        })
+        .catch(error => console.error('Error fetching GitHub user avatar:', error));
+    });
+  </script>
 </head>
 <body>
 
@@ -260,8 +274,11 @@
           const contentPromises = files.map((file, index) => {
             if (file.name.endsWith('.md')) {
               return fetch(file.download_url)
-                .then(response => response.text())
-                .then(text => {
+                .then(response => response.text().then(text => ({
+                  text,
+                  date: new Date(file.git_url.split('/').slice(-1)[0]) // 获取文件的修改日期
+                })))
+                .then(({ text, date }) => {
                   const lines = text.split('\n');
                   let imageSrc = "https://via.placeholder.com/150";
                   let title = `内容模块 ${index + 1}`;
@@ -299,14 +316,26 @@
                   `;
                   contentModules.appendChild(module);
 
-                  contentData.push({ title, description, content, element: module });
+                  contentData.push({ title, description, content, element: module, date });
 
                   return module;
                 });
             }
           });
 
-          return Promise.all(contentPromises);
+          return Promise.all(contentPromises).then(() => {
+            contentData.sort((a, b) => {
+              if (b.date - a.date !== 0) {
+                return b.date - a.date; // 按最近修改时间排序
+              }
+              return a.title.localeCompare(b.title, 'zh-Hans-CN'); // 按拼音排序
+            });
+
+            contentModules.innerHTML = '';
+            contentData.forEach(({ element }) => {
+              contentModules.appendChild(element);
+            });
+          });
         })
         .catch(error => {
           console.error('Error fetching content list:', error);
