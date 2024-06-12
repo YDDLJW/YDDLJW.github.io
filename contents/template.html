@@ -7,46 +7,8 @@
   <!-- Compiled and minified CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
   <link id="favicon" rel="icon" href="">
+  <link rel="stylesheet" href="../css_template.css">
   <style>
-    body {
-      margin: 0;
-      padding-top: 50px; /* Add padding to separate content from the fixed header */
-      padding-bottom: 60px; /* Add padding to separate content from the fixed footer */
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      background-color: #f0f0f0;
-    }
-    .background-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      z-index: -1;
-    }
-    .background-image {
-      position: absolute;
-      width: 125%; /* To ensure the image covers the whole viewport during the movement */
-      height: 125%;
-      opacity: 0.5;
-      animation: moveCamera 40s infinite linear; /* Slowed down the animation */
-    }
-    @keyframes moveCamera {
-      0%, 100% {
-        transform: translate(0, 0);
-      }
-      25% {
-        transform: translate(-20%, -20%);
-      }
-      50% {
-        transform: translate(-20%, 0);
-      }
-      75% {
-        transform: translate(0, -20%);
-      }
-    }
     .content-wrapper {
       background-color: rgba(255, 255, 255, 0.8);
       padding: 20px;
@@ -60,101 +22,14 @@
       justify-content: center;
       align-items: center;
     }
-    .upper-footer {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      background: linear-gradient(45deg, rgba(255, 182, 193, 0.8), rgba(255, 105, 180, 0.8));
-      color: white;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 20px;
-      z-index: 2;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-    .upper-footer a {
-      color: white;
-      margin-left: 20px;
-      text-decoration: none;
-    }
-    .search-container {
-      flex: auto;
-      display: flex;
-      justify-content: center;
-    }
-    .search-box {
-      background-color: white;
-      border-radius: 33px;
-      padding: 0 10px; /* Adjusted padding for better fit */
-      display: flex;
-      align-items: center;
-      height: 32px; /* Adjusted height for smaller search box */
-      width: 400px; /* Adjusted width for smaller search box */
-    }
-    .search-input {
-      border: none;
-      outline: none;
-      width: 100%;
-      padding: 5px;
-      height: 100%;
-    }
-    .search-button {
-      margin-left: 10px;
-      padding: 4px 12px; /* Adjusted padding for smaller search button */
-      border-radius: 22px;
-      border: none;
-      background-color: #faa2ce;
-      color: white;
-      cursor: pointer;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .toggle-button {
-      margin-left: 10px;
-      padding: 4px 12px;
-      border-radius: 22px;
-      border: none;
-      background-color: #ff69b5;
-      color: white;
-      cursor: pointer;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .page-footer {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: linear-gradient(45deg, rgba(255, 182, 193, 0.8), rgba(255, 105, 180, 0.8));
-      color: white;
-      z-index: 2;
-      height: 78px; /* Adjusted footer height */
-      display: flex;
-      align-items: center;
-    }
-    .footer-content {
-      display: flex;
-      justify-content: space-between;
-      padding: 0 150px; /* Add padding to make the content not touch the edges */
-    }
-    .footer-section {
-      flex: 1;
-      padding: 10px;
-      font-size: 0.8rem; /* Adjusted font size */
-    }
-    .footer-section h5 {
-      margin-bottom: 2px; /* Adjusted margin to reduce spacing */
+    .content-detail {
+      color: black;
     }
     .toc {
       position: fixed;
-      top: 60px;
+      top: 50%;
       right: -180px; /* Hide half of the TOC offscreen */
+      transform: translateY(-50%);
       width: 200px;
       background-color: rgba(255, 255, 255, 0.9);
       border-radius: 10px;
@@ -175,15 +50,17 @@
       font-weight: bold;
       font-size: 1.1rem;
     }
-    .night-mode .upper-footer {
-      background: linear-gradient(45deg, rgba(0, 0, 0, 0.8), rgba(20, 20, 40, 0.8));
+    .footer-section {
+      display: flex;
+      align-items: center;
     }
-    .night-mode .page-footer {
-      background: linear-gradient(45deg, rgba(0, 0, 0, 0.8), rgba(20, 20, 40, 0.8));
+    .footer-section h5, .footer-section p {
+      margin: 0 10px 0 0;
     }
-    .night-mode .content-wrapper {
-      background-color: rgba(0, 0, 0, 0.8);
-      color: #d3d3d3;
+    .footer-content > .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     .night-mode .content-detail {
       color: #d3d3d3;
@@ -192,21 +69,7 @@
       background-color: rgba(50, 50, 50, 0.8);
       color: #d3d3d3;
     }
-    .night-mode .search-box {
-      background-color: rgba(50, 50, 50, 0.8);
-      color: #d3d3d3;
-    }
-    .night-mode .search-input {
-      background-color: transparent;
-      color: #d3d3d3;
-    }
-    .night-mode .search-button,
-    .night-mode .toggle-button {
-      background-color: rgba(50, 50, 50, 0.8);
-      color: #d3d3d3;
-    }
   </style>
-
   <!-- GitHub Avatar Fetching Script -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -253,7 +116,6 @@
   </script>
 </head>
 <body>
-
   <div class="upper-footer">
     <div class="left">
       <a href="../index.html" class="brand-logo" onclick="resetSearch()">YDD羊弟弟的小屋</a>
@@ -300,7 +162,7 @@
     </div>
     <div class="footer-content">
       <div class="container">
-        © 2024 YDD
+        © 2024 YDD羊弟弟
       </div>
     </div>
   </footer>
