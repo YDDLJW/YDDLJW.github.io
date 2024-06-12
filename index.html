@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Forum</title>
+</head>
+<body>
+    <h1>Welcome to the Forum</h1>
+    <ul>
+        {% for post in posts %}
+            <li>
+                <h2>{{ post.title }}</h2>
+                <p>{{ post.content }}</p>
+                <p><em>Posted by {{ post.author }} on {{ post.created_at }}</em></p>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
