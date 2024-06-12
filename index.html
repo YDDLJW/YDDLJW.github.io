@@ -111,18 +111,19 @@
       background: linear-gradient(45deg, rgba(255, 182, 193, 0.8), rgba(255, 105, 180, 0.8));
       color: white;
       z-index: 2;
-      height: 60px; /* Adjusted footer height */
+      height: 90px; /* Adjusted footer height */
       display: flex;
       align-items: center;
     }
     .footer-content {
       display: flex;
       justify-content: space-between;
+      padding: 0 150px; /* Add padding to make the content not touch the edges */
     }
     .footer-section {
       flex: 1;
       padding: 10px;
-      font-size: 0.9rem; /* Adjusted font size */
+      font-size: 0.8rem; /* Adjusted font size */
     }
   </style>
 </head>
@@ -145,7 +146,7 @@
   <div class="container content-wrapper" id="home">
     <div class="section">
       <h1>欢迎来到羊弟弟的小屋</h1>
-      <p>这是一个使用Materialize框架创建的简单示例网站。</p>
+      <p>我会在这里发表一些帖子</p>
       <!-- Content modules will be dynamically inserted here -->
       <div id="content-modules"></div>
     </div>
@@ -176,7 +177,7 @@
     </div>
     <div class="footer-content">
       <div class="container">
-        © 2024 YDD羊弟弟的小屋
+        © 2024 YDD羊弟弟
       </div>
     </div>
   </footer>
@@ -222,14 +223,19 @@
                   let description = "";
 
                   for (let line of lines) {
-                    if (line.startsWith('![')) {
-                      const match = line.match(/\((.*?)\)/);
+                    if (line.includes('<img')) {
+                      const match = line.match(/src="(.*?)"/);
                       if (match) {
                         imageSrc = match[1];
+                        break;
                       }
-                    } else if (line.startsWith('#')) {
+                    }
+                  }
+
+                  for (let line of lines) {
+                    if (line.startsWith('#')) {
                       title = line.replace(/^#+\s*/, '');
-                    } else if (line.trim() !== "") {
+                    } else if (line.trim() !== "" && !line.includes('<img')) {
                       description = line.trim().substring(0, 100) + '...';
                       break;
                     }
