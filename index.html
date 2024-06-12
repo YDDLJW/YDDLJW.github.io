@@ -9,9 +9,81 @@
 </head>
 <body>
 
-  <!-- Your content goes here -->
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-wrapper">
+      <a href="#" class="brand-logo">My Site</a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container" id="home">
+    <div class="section">
+      <h1>Welcome to My Website</h1>
+      <p>This is a simple example of a Materialize website.</p>
+      <!-- Trigger the modal with a button -->
+      <a class="waves-effect waves-light btn modal-trigger" href="#modal1">Open Modal</a>
+    </div>
+  </div>
+
+  <!-- About Section -->
+  <div class="container" id="about">
+    <div class="section">
+      <h2>About Me</h2>
+      <p>Here you can include information about yourself.</p>
+    </div>
+  </div>
+
+  <!-- Contact Section -->
+  <div class="container" id="contact">
+    <div class="section">
+      <h2>Contact</h2>
+      <p>Here you can include your contact information.</p>
+    </div>
+  </div>
+
+  <!-- Modal Structure -->
+  <div id="modal1" class="modal">
+    <div class="modal-content">
+      <h4>Modal Header</h4>
+      <p>A bunch of text</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="page-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col l6 s12">
+          <h5 class="white-text">Footer Content</h5>
+          <p class="grey-text text-lighten-4">You can use rows and columns here to organize your footer content.</p>
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <div class="container">
+      © 2024 My Materialize Website
+      </div>
+    </div>
+  </footer>
 
   <!-- Compiled and minified JavaScript -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+  <!-- Initialize JavaScript Components -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var elems = document.querySelectorAll('.modal');
+      var instances = M.Modal.init(elems);
+    });
+  </script>
 </body>
 </html>
