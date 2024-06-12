@@ -9,7 +9,7 @@
   <style>
     body {
       margin: 0;
-      padding-top: 60px; /* Add padding to separate content from the fixed header */
+      padding-top: 35px; /* Add padding to separate content from the fixed header */
       padding-bottom: 60px; /* Add padding to separate content from the fixed footer */
       display: flex;
       flex-direction: column;
@@ -82,7 +82,7 @@
       font-size: 1.5rem;
     }
     .content-module p {
-      margin: 5px 0;
+      margin: 2px 0;
     }
     .upper-footer {
       position: fixed;
@@ -111,11 +111,11 @@
     .search-box {
       background-color: white;
       border-radius: 33px;
-      padding: 3px 5px;
+      padding: 0 10px; /* Adjusted padding for better fit */
       display: flex;
       align-items: center;
-      height: 30px; /* Adjusted height for smaller search box */
-      width: 400px; /* Adjusted width for smaller search box */
+      height: 32px; /* Adjusted height for smaller search box */
+      width: 300px; /* Adjusted width for smaller search box */
     }
     .search-input {
       border: none;
@@ -126,13 +126,16 @@
     }
     .search-button {
       margin-left: 10px;
-      padding: 5px 10px; /* Adjusted padding for smaller search button */
-      border-radius: 33px;
+      padding: 4px 12px; /* Adjusted padding for smaller search button */
+      border-radius: 22px;
       border: none;
       background-color: #ff69b4;
       color: white;
       cursor: pointer;
       height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .page-footer {
       position: fixed;
@@ -155,6 +158,9 @@
       flex: 1;
       padding: 10px;
       font-size: 0.8rem; /* Adjusted font size */
+    }
+    .footer-section h5 {
+      margin-bottom: 2px; /* Adjusted margin to reduce spacing */
     }
   </style>
 </head>
@@ -214,7 +220,7 @@
     </div>
     <div class="footer-content">
       <div class="container">
-        © 2024 YDD羊弟弟
+        © 2024 YDD
       </div>
     </div>
   </footer>
