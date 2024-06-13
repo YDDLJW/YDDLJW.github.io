@@ -137,9 +137,10 @@
       var instances = M.Modal.init(elems);
 
       // Load Markdown content
+      const folder = new URLSearchParams(window.location.search).get('folder');
       const contentUrl = new URLSearchParams(window.location.search).get('content');
-      if (contentUrl) {
-        fetch(`https://raw.githubusercontent.com/YDDLJW/YDDLJW.github.io/main/contents/${contentUrl}`)
+      if (folder && contentUrl) {
+        fetch(`https://raw.githubusercontent.com/YDDLJW/YDDLJW.github.io/main/${folder}/${contentUrl}`)
           .then(response => {
             if (!response.ok) {
               throw new Error('Network response was not ok ' + response.statusText);

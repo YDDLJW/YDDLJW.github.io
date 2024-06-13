@@ -130,7 +130,7 @@
       // Dynamically load content modules
       const contentModulesContainer = document.getElementById('content-modules');
 
-      fetch('https://api.github.com/repos/YDDLJW/YDDLJW.github.io/posts')
+      fetch('https://api.github.com/repos/YDDLJW/YDDLJW.github.io/contents/posts')
         .then(response => response.json())
         .then(folders => {
           const folderPromises = folders.map(folder => {
@@ -152,8 +152,9 @@
                         .then(response => response.text().then(text => ({
                           text,
                           name: file.name,
+                          path: folder.path // Store folder path with file
                         })))
-                        .then(({ text, name }) => {
+                        .then(({ text, name, path }) => {
                           const lines = text.split('\n');
                           let imageSrc = "https://via.placeholder.com/150";
                           let title = `内容模块 ${name}`;
@@ -180,7 +181,7 @@
                           }
 
                           const module = document.createElement('a');
-                          module.href = `template.html?content=${file.name}`;
+                          module.href = `template.html?folder=${path}&content=${file.name}`;
                           module.className = 'content-module';
                           module.id = `module-${file.name}`;
                           module.innerHTML = `
@@ -209,12 +210,6 @@
               const numA = parseInt(a.name.match(/(\d+)/)[0], 10);
               const numB = parseInt(b.name.match(/(\d+)/)[0], 10);
               return numB - numA; // 按文件名中的数字进行倒序排序
-            });
-
-            contentModulesContainer.innerHTML = '';
-            contentData.forEach(({ element }, index) => {
-              element.id = `module-${index + 1}`;
-              element.parentNode.appendChild(element);
             });
 
             updateToc();
