@@ -130,7 +130,7 @@
       // Dynamically load content modules
       const contentModulesContainer = document.getElementById('content-modules');
 
-      fetch('https://api.github.com/repos/YDDLJW/YDDLJW.github.io/contents')
+      fetch('https://api.github.com/repos/YDDLJW/YDDLJW.github.io/posts')
         .then(response => response.json())
         .then(folders => {
           const folderPromises = folders.map(folder => {
