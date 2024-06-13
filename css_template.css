@@ -188,3 +188,23 @@ body {
   background-color: rgba(50, 50, 50, 0.8);
   color: #d3d3d3;
 }
+
+.search-result-wrapper {
+  display: none; /* Initially hidden */
+  position: fixed;
+  top: 50px; /* Below the header */
+  width: 100%;
+  z-index: 3;
+  transition: transform 0.5s, opacity 0.5s;
+}
+
+.search-result-wrapper.show {
+  display: flex;
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.search-result-wrapper.hide {
+  transform: translateY(-100%);
+  opacity: 0;
+}

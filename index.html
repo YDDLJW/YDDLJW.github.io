@@ -8,8 +8,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
   <link id="favicon" rel="icon" href="">
   <link rel="stylesheet" href="css_template.css">
-  <script src="common.js"></script>
   <style>
+    /* CSS 部分 */
     .content-wrapper {
       background-color: rgba(255, 255, 255, 0.8);
       border-radius: 10px;
@@ -19,9 +19,10 @@
       z-index: 1;
       display: flex;
       flex-direction: column;
-      height: 500px; /* 固定高度，适合显示三个内容模块 */
-      overflow-y: auto; /* 启用垂直滚动条 */
-      position: relative; /* 确保子元素的sticky定位有效 */
+      height: 500px;
+      overflow-y: auto;
+      position: relative;
+      transition: transform 0.5s, margin-top 0.5s; /* 平滑过渡效果 */
     }
     .wrapper-footer {
       background-color: rgba(255, 255, 255, 0.9);
@@ -32,7 +33,7 @@
       border-top-right-radius: 10px;
       position: sticky;
       top: 0;
-      z-index: 2; /* 确保footer在内容上方 */
+      z-index: 2;
     }
     .wrapper-title {
       font-size: 1.2rem;
@@ -77,17 +78,17 @@
     .toc {
       position: fixed;
       top: 50%;
-      right: -180px; /* 隐藏一半的TOC */
+      right: -180px;
       transform: translateY(-50%);
       width: 200px;
       background-color: rgba(255, 255, 255, 0.9);
       border-radius: 10px;
       padding: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      transition: right 0.5s; /* 平滑过渡效果 */
+      transition: right 0.5s;
     }
     .toc:hover {
-      right: 0; /* 悬停时TOC完全显示 */
+      right: 0;
     }
     .toc a {
       display: block;
@@ -99,16 +100,47 @@
       font-weight: bold;
       font-size: 1.1rem;
     }
+    .search-result-wrapper {
+      background-color: rgba(255, 255, 255, 0.95);
+      border-radius: 10px;
+      margin: 20px auto;
+      width: 80%;
+      max-width: 800px;
+      z-index: 2;
+      display: none; /* Initially hidden */
+      flex-direction: column;
+      padding: 20px;
+      position: relative;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: transform 0.5s, margin-top 0.5s; /* Smooth transition effects */
+    }
+    .search-result-title {
+      font-size: 1.5rem;
+      margin: 0 0 10px;
+      text-align: center;
+    }
   </style>
   <script>
+    // JavaScript 部分
     function searchContent(query) {
+      const searchResultWrapper = document.getElementById('search-result-wrapper');
+      const searchResultTitle = document.getElementById('search-result-title');
+      const searchResults = document.getElementById('search-results');
+
+      searchResultTitle.textContent = `Searching... ${query}`;
+      searchResults.innerHTML = '';
+
       contentData.forEach(({ title, description, content, element }) => {
         if (title.toLowerCase().includes(query) || description.toLowerCase().includes(query) || content.toLowerCase().includes(query)) {
-          element.style.display = 'flex';
-        } else {
-          element.style.display = 'none';
+          const clone = element.cloneNode(true);
+          searchResults.appendChild(clone);
         }
       });
+
+      searchResultWrapper.style.display = 'flex';
+      setTimeout(() => {
+        searchResultWrapper.classList.add('show');
+      }, 10);
     }
 
     function updateToc() {
@@ -161,7 +193,7 @@
                         .then(response => response.text().then(text => ({
                           text,
                           name: file.name,
-                          path: folder.path // 存储文件夹路径
+                          path: folder.path
                         })));
                     }
                   });
@@ -170,7 +202,7 @@
                     modules.sort((a, b) => {
                       const numA = parseInt(a.name.match(/(\d+)/)[0], 10);
                       const numB = parseInt(b.name.match(/(\d+)/)[0], 10);
-                      return numB - numA; // 按文件名中的数字进行倒序排序
+                      return numB - numA;
                     });
 
                     modules.forEach(({ text, name, path }) => {
@@ -230,9 +262,36 @@
       window.addEventListener('scroll', updateToc);
       window.addEventListener('resize', updateToc);
     });
+
+    function handleKeyDown(event) {
+      if (event.key === 'Enter') {
+        handleSearch();
+      }
+    }
+
+    function handleSearch() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      if (query) {
+        const encodedQuery = encodeURIComponent(query);
+        window.location.href = `index.html?search=${encodedQuery}`;
+      } else {
+        resetSearch();
+      }
+    }
+
+    function resetSearch() {
+      const searchResultWrapper = document.getElementById('search-result-wrapper');
+      searchResultWrapper.classList.remove('show');
+      searchResultWrapper.classList.add('hide');
+      setTimeout(() => {
+        searchResultWrapper.style.display = 'none';
+        window.location.href = 'index.html';
+      }, 500);
+    }
   </script>
 </head>
 <body>
+  <!-- HTML 部分 -->
   <div class="upper-footer">
     <div class="left">
       <a href="#" class="brand-logo" onclick="resetSearch()">YDD羊弟弟的小屋</a>
@@ -260,6 +319,11 @@
       <p>无论多么响亮的摇滚乐，都会消失在无限的大地尽头。</p>
       <!-- Content modules will be dynamically inserted here -->
       <div id="content-modules"></div>
+      <!-- 搜索结果容器 -->
+      <div id="search-result-wrapper" class="search-result-wrapper">
+        <h2 id="search-result-title" class="search-result-title"></h2>
+        <div id="search-results"></div>
+      </div>
     </div>
   </div>
 
@@ -289,5 +353,6 @@
 
   <!-- Compiled and minified JavaScript -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script src="common.js"></script>
 </body>
 </html>

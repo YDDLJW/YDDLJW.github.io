@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const searchQuery = searchParams.get('search');
   if (searchQuery) {
     document.getElementById('searchInput').value = searchQuery;
-    searchContent(searchQuery);
+    displaySearchResults(searchQuery);
   }
 
   // 初始化背景图片
@@ -51,9 +51,40 @@ function handleKeyDown(event) {
 
 function handleSearch() {
   const query = document.getElementById('searchInput').value.toLowerCase();
-  window.location.href = `../index.html?search=${encodeURIComponent(query)}`;
+  if (query) {
+    window.location.href = `index.html?search=${encodeURIComponent(query)}`;
+  } else {
+    resetSearch();
+  }
 }
 
 function resetSearch() {
-  window.location.href = '../index.html';
+  const searchResultWrapper = document.getElementById('search-result-wrapper');
+  searchResultWrapper.classList.remove('show');
+  searchResultWrapper.classList.add('hide');
+  setTimeout(() => {
+    searchResultWrapper.style.display = 'none';
+    window.location.href = 'index.html';
+  }, 500);
+}
+
+function displaySearchResults(query) {
+  const searchResultWrapper = document.getElementById('search-result-wrapper');
+  const searchResultTitle = document.getElementById('search-result-title');
+  const searchResults = document.getElementById('search-results');
+
+  searchResultTitle.textContent = `Searching... ${query}`;
+  searchResults.innerHTML = '';
+
+  contentData.forEach(({ title, description, content, element }) => {
+    if (title.toLowerCase().includes(query) || description.toLowerCase().includes(query) || content.toLowerCase().includes(query)) {
+      const clone = element.cloneNode(true);
+      searchResults.appendChild(clone);
+    }
+  });
+
+  searchResultWrapper.style.display = 'flex';
+  setTimeout(() => {
+    searchResultWrapper.classList.add('show');
+  }, 10);
 }

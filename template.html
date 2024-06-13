@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
   <link id="favicon" rel="icon" href="">
   <link rel="stylesheet" href="css_template.css">
-  <script src="common.js"></script>
   <style>
     .content-wrapper {
       background-color: rgba(255, 255, 255, 0.8);
@@ -29,17 +28,17 @@
     .toc {
       position: fixed;
       top: 50%;
-      right: -180px; /* Hide half of the TOC offscreen */
+      right: -180px;
       transform: translateY(-50%);
       width: 200px;
       background-color: rgba(255, 255, 255, 0.9);
       border-radius: 10px;
       padding: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      transition: right 0.5s; /* Smooth transition for sliding in and out */
+      transition: right 0.5s;
     }
     .toc:hover {
-      right: 0; /* Slide the TOC fully into view on hover */
+      right: 0;
     }
     .toc a {
       display: block;
@@ -128,8 +127,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <!-- Markdown parsing library -->
   <script src="https://cdn.jsdelivr.net/npm/marked@4.0.10/marked.min.js"></script>
+  <script src="common.js"></script>
 
-  <!-- Initialize JavaScript Components -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       // Initialize modal
@@ -197,6 +196,26 @@
           });
       }
     });
+
+    function handleKeyDown(event) {
+      if (event.key === 'Enter') {
+        handleSearch();
+      }
+    }
+
+    function handleSearch() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      if (query) {
+        const encodedQuery = encodeURIComponent(query);
+        window.location.href = `index.html?search=${encodedQuery}`;
+      } else {
+        resetSearch();
+      }
+    }
+
+    function resetSearch() {
+      window.location.href = 'index.html';
+    }
   </script>
 </body>
 </html>
