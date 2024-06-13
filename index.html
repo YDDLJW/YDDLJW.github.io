@@ -155,6 +155,12 @@
               return fetch(folder.url)
                 .then(response => response.json())
                 .then(files => {
+                  files.sort((a, b) => {
+                    const numA = parseInt(a.name.match(/(\d+)/)[0], 10);
+                    const numB = parseInt(b.name.match(/(\d+)/)[0], 10);
+                    return numB - numA; // 按文件名中的数字进行倒序排序
+                  });
+
                   const filePromises = files.map(file => {
                     if (file.name.endsWith('.md')) {
                       return fetch(file.download_url)
@@ -215,12 +221,6 @@
           });
 
           return Promise.all(folderPromises).then(() => {
-            contentData.sort((a, b) => {
-              const numA = parseInt(a.name.match(/(\d+)/)[0], 10);
-              const numB = parseInt(b.name.match(/(\d+)/)[0], 10);
-              return numB - numA; // 按文件名中的数字进行倒序排序
-            });
-
             updateToc();
           });
         })
