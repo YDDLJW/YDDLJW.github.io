@@ -7,7 +7,8 @@
   <!-- Compiled and minified CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
   <link id="favicon" rel="icon" href="">
-  <link rel="stylesheet" href="../css_template.css">
+  <link rel="stylesheet" href="css_template.css">
+  <script src="common.js"></script>
   <style>
     .content-wrapper {
       background-color: rgba(255, 255, 255, 0.8);
@@ -70,65 +71,21 @@
       color: #d3d3d3;
     }
   </style>
-  <!-- GitHub Avatar Fetching Script -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      fetch('https://api.github.com/users/YDDLJW')
-        .then(response => response.json())
-        .then(data => {
-          const faviconLink = document.getElementById('favicon');
-          faviconLink.href = data.avatar_url;
-        })
-        .catch(error => console.error('Error fetching GitHub user avatar:', error));
-
-      const nightMode = localStorage.getItem('nightMode');
-      if (nightMode === 'true') {
-        document.body.classList.add('night-mode');
-      }
-
-      const searchParams = new URLSearchParams(window.location.search);
-      const searchQuery = searchParams.get('search');
-      if (searchQuery) {
-        document.getElementById('searchInput').value = searchQuery;
-        searchContent(searchQuery);
-      }
-    });
-
-    function toggleNightMode() {
-      document.body.classList.toggle('night-mode');
-      localStorage.setItem('nightMode', document.body.classList.contains('night-mode'));
-    }
-
-    function handleKeyDown(event) {
-      if (event.key === 'Enter') {
-        handleSearch();
-      }
-    }
-
-    function handleSearch() {
-      const query = document.getElementById('searchInput').value.toLowerCase();
-      window.location.href = `../index.html?search=${encodeURIComponent(query)}`;
-    }
-
-    function resetSearch() {
-      window.location.href = '../index.html';
-    }
-  </script>
 </head>
 <body>
   <div class="upper-footer">
     <div class="left">
-      <a href="../index.html" class="brand-logo" onclick="resetSearch()">YDD羊弟弟的小屋</a>
+      <a href="index.html" class="brand-logo" onclick="resetSearch()">YDD羊弟弟的小屋</a>
     </div>
     <div class="search-container">
       <div class="search-box">
-        <input type="text" class="search-input" id="searchInput" placeholder="搜索内容" onkeydown="handleKeyDown(event)">
+        <input type="text" class="search-input" id="searchInput" placeholder="搜索内容" onkeydown="handleKeyDown(event)" autocomplete="off">
         <button class="search-button" onclick="handleSearch()">→</button>
       </div>
     </div>
     <div class="right">
       <button class="toggle-button" onclick="toggleNightMode()">切换昼夜模式</button>
-      <a href="../index.html#home" onclick="resetSearch()">首页</a>
+      <a href="index.html#home" onclick="resetSearch()">首页</a>
     </div>
   </div>
 
@@ -178,21 +135,6 @@
       // Initialize modal
       var elems = document.querySelectorAll('.modal');
       var instances = M.Modal.init(elems);
-
-      // Array of background image URLs
-      fetch('https://api.github.com/repos/YDDLJW/YDDLJW.github.io/contents/static')
-        .then(response => response.json())
-        .then(data => {
-          const images = data.map(file => file.download_url);
-          let currentIndex = 0;
-          const backgroundImage = document.getElementById('backgroundImage');
-          backgroundImage.src = images[currentIndex];
-
-          backgroundImage.addEventListener('animationiteration', () => {
-            currentIndex = (currentIndex + 1) % images.length;
-            backgroundImage.src = images[currentIndex];
-          });
-        });
 
       // Load Markdown content
       const contentUrl = new URLSearchParams(window.location.search).get('content');

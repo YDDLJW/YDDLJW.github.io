@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
   <link id="favicon" rel="icon" href="">
   <link rel="stylesheet" href="css_template.css">
+  <script src="common.js"></script>
   <style>
     .content-wrapper {
       background-color: rgba(255, 255, 255, 0.8);
@@ -85,35 +86,7 @@
       font-size: 1.1rem;
     }
   </style>
-  <!-- GitHub Avatar Fetching Script -->
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      fetch('https://api.github.com/users/YDDLJW')
-        .then(response => response.json())
-        .then(data => {
-          const faviconLink = document.getElementById('favicon');
-          faviconLink.href = data.avatar_url;
-        })
-        .catch(error => console.error('Error fetching GitHub user avatar:', error));
-
-      const searchParams = new URLSearchParams(window.location.search);
-      const query = searchParams.get('search');
-      if (query) {
-        document.getElementById('searchInput').value = query;
-        searchContent(query);
-      }
-
-      const nightMode = localStorage.getItem('nightMode');
-      if (nightMode === 'true') {
-        document.body.classList.add('night-mode');
-      }
-    });
-
-    function toggleNightMode() {
-      document.body.classList.toggle('night-mode');
-      localStorage.setItem('nightMode', document.body.classList.contains('night-mode'));
-    }
-
     function searchContent(query) {
       contentData.forEach(({ title, description, content, element }) => {
         if (title.toLowerCase().includes(query) || description.toLowerCase().includes(query) || content.toLowerCase().includes(query)) {
@@ -122,18 +95,6 @@
           element.style.display = 'none';
         }
       });
-    }
-
-    function handleSearch() {
-      const query = document.getElementById('searchInput').value.toLowerCase();
-      searchContent(query);
-      window.history.replaceState(null, '', `?search=${encodeURIComponent(query)}`);
-    }
-
-    function resetSearch() {
-      document.getElementById('searchInput').value = '';
-      searchContent('');
-      window.history.replaceState(null, '', window.location.pathname);
     }
 
     function updateToc() {
@@ -165,21 +126,6 @@
     document.addEventListener('DOMContentLoaded', function() {
       var elems = document.querySelectorAll('.modal');
       var instances = M.Modal.init(elems);
-
-      // Fetching all background images from the static directory
-      fetch('https://api.github.com/repos/YDDLJW/YDDLJW.github.io/contents/static')
-        .then(response => response.json())
-        .then(data => {
-          const images = data.map(file => file.download_url);
-          let currentIndex = 0;
-          const backgroundImage = document.getElementById('backgroundImage');
-          backgroundImage.src = images[currentIndex];
-
-          backgroundImage.addEventListener('animationiteration', () => {
-            currentIndex = (currentIndex + 1) % images.length;
-            backgroundImage.src = images[currentIndex];
-          });
-        });
 
       // Dynamically load content modules
       const contentModules = document.getElementById('content-modules');
@@ -221,7 +167,7 @@
                   }
 
                   const module = document.createElement('a');
-                  module.href = `contents/template.html?content=${file.name}`;
+                  module.href = `template.html?content=${file.name}`;
                   module.className = 'content-module';
                   module.id = `module-${index + 1}`;
                   module.innerHTML = `
@@ -272,7 +218,7 @@
     </div>
     <div class="search-container">
       <div class="search-box">
-        <input type="text" class="search-input" id="searchInput" placeholder="搜索内容" onkeydown="handleKeyDown(event)">
+        <input type="text" class="search-input" id="searchInput" placeholder="搜索内容" onkeydown="handleKeyDown(event)" autocomplete="off">
         <button class="search-button" onclick="handleSearch()">→</button>
       </div>
     </div>
