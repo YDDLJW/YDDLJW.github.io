@@ -128,75 +128,93 @@
       var instances = M.Modal.init(elems);
 
       // Dynamically load content modules
-      const contentModules = document.getElementById('content-modules');
+      const contentModulesContainer = document.getElementById('content-modules');
 
-      fetch('https://api.github.com/repos/YDDLJW/YDDLJW.github.io/contents/contents')
+      fetch('https://api.github.com/repos/YDDLJW/YDDLJW.github.io/contents')
         .then(response => response.json())
-        .then(files => {
-          const contentPromises = files.map((file, index) => {
-            if (file.name.endsWith('.md')) {
-              return fetch(file.download_url)
-                .then(response => response.text().then(text => ({
-                  text,
-                  name: file.name,
-                })))
-                .then(({ text, name }) => {
-                  const lines = text.split('\n');
-                  let imageSrc = "https://via.placeholder.com/150";
-                  let title = `内容模块 ${index + 1}`;
-                  let description = "";
-                  let content = text;
+        .then(folders => {
+          const folderPromises = folders.map(folder => {
+            if (folder.type === 'dir') {
+              const folderWrapper = document.createElement('div');
+              folderWrapper.className = 'content-wrapper';
+              folderWrapper.id = `wrapper-${folder.name}`;
+              const folderTitle = document.createElement('h4');
+              folderTitle.textContent = folder.name;
+              folderWrapper.appendChild(folderTitle);
+              contentModulesContainer.appendChild(folderWrapper);
 
-                  for (let line of lines) {
-                    if (line.includes('<img')) {
-                      const match = line.match(/src="(.*?)"/);
-                      if (match) {
-                        imageSrc = match[1];
-                        break;
-                      }
+              return fetch(folder.url)
+                .then(response => response.json())
+                .then(files => {
+                  const filePromises = files.map(file => {
+                    if (file.name.endsWith('.md')) {
+                      return fetch(file.download_url)
+                        .then(response => response.text().then(text => ({
+                          text,
+                          name: file.name,
+                        })))
+                        .then(({ text, name }) => {
+                          const lines = text.split('\n');
+                          let imageSrc = "https://via.placeholder.com/150";
+                          let title = `内容模块 ${name}`;
+                          let description = "";
+                          let content = text;
+
+                          for (let line of lines) {
+                            if (line.includes('<img')) {
+                              const match = line.match(/src="(.*?)"/);
+                              if (match) {
+                                imageSrc = match[1];
+                                break;
+                              }
+                            }
+                          }
+
+                          for (let line of lines) {
+                            if (line.startsWith('#')) {
+                              title = line.replace(/^#+\s*/, '');
+                            } else if (line.trim() !== "" && !line.includes('<img')) {
+                              description = line.trim().substring(0, 100) + '...';
+                              break;
+                            }
+                          }
+
+                          const module = document.createElement('a');
+                          module.href = `template.html?content=${file.name}`;
+                          module.className = 'content-module';
+                          module.id = `module-${file.name}`;
+                          module.innerHTML = `
+                            <img src="${imageSrc}" alt="缩略图">
+                            <div>
+                              <h2>${title}</h2>
+                              <p>${description}</p>
+                            </div>
+                          `;
+                          folderWrapper.appendChild(module);
+
+                          contentData.push({ title, description, content, element: module, name });
+
+                          return module;
+                        });
                     }
-                  }
+                  });
 
-                  for (let line of lines) {
-                    if (line.startsWith('#')) {
-                      title = line.replace(/^#+\s*/, '');
-                    } else if (line.trim() !== "" && !line.includes('<img')) {
-                      description = line.trim().substring(0, 100) + '...';
-                      break;
-                    }
-                  }
-
-                  const module = document.createElement('a');
-                  module.href = `template.html?content=${file.name}`;
-                  module.className = 'content-module';
-                  module.id = `module-${index + 1}`;
-                  module.innerHTML = `
-                    <img src="${imageSrc}" alt="缩略图">
-                    <div>
-                      <h2>${title}</h2>
-                      <p>${description}</p>
-                    </div>
-                  `;
-                  contentModules.appendChild(module);
-
-                  contentData.push({ title, description, content, element: module, name });
-
-                  return module;
+                  return Promise.all(filePromises);
                 });
             }
           });
 
-          return Promise.all(contentPromises).then(() => {
+          return Promise.all(folderPromises).then(() => {
             contentData.sort((a, b) => {
               const numA = parseInt(a.name.match(/(\d+)/)[0], 10);
               const numB = parseInt(b.name.match(/(\d+)/)[0], 10);
               return numB - numA; // 按文件名中的数字进行倒序排序
             });
 
-            contentModules.innerHTML = '';
+            contentModulesContainer.innerHTML = '';
             contentData.forEach(({ element }, index) => {
               element.id = `module-${index + 1}`;
-              contentModules.appendChild(element);
+              element.parentNode.appendChild(element);
             });
 
             updateToc();
@@ -233,7 +251,7 @@
   </div>
 
   <!-- Main Content -->
-  <div class="container content-wrapper" id="home">
+  <div class="container" id="home">
     <div class="section">
       <h4>欢迎来到羊弟弟的小屋</h4>
       <p>无论多么响亮的摇滚乐，都会消失在无限的大地尽头。</p>
