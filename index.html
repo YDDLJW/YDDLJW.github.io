@@ -12,24 +12,38 @@
   <style>
     .content-wrapper {
       background-color: rgba(255, 255, 255, 0.8);
-      padding: 20px;
       border-radius: 10px;
       margin: 20px auto;
       width: 80%;
       max-width: 800px;
       z-index: 1;
-      flex: 1;
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
-      align-items: center;
+      height: 500px; /* 固定高度，适合显示三个内容模块 */
+      overflow-y: auto; /* 启用垂直滚动条 */
+      position: relative; /* 确保子元素的sticky定位有效 */
+    }
+    .wrapper-footer {
+      background-color: rgba(255, 255, 255, 0.9);
+      width: 100%;
+      padding: 10px 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+      position: sticky;
+      top: 0;
+      z-index: 2; /* 确保footer在内容上方 */
+    }
+    .wrapper-title {
+      font-size: 1.2rem;
+      margin: 0;
     }
     .content-module {
       background-color: rgba(255, 255, 255, 0.9);
       border-radius: 10px;
-      margin: 10px 0;
+      margin: 10px 20px;
       padding: 15px;
-      width: 100%;
+      width: calc(100% - 40px);
       display: flex;
       align-items: center;
       text-decoration: none;
@@ -63,17 +77,17 @@
     .toc {
       position: fixed;
       top: 50%;
-      right: -180px; /* Hide half of the TOC offscreen */
+      right: -180px; /* 隐藏一半的TOC */
       transform: translateY(-50%);
       width: 200px;
       background-color: rgba(255, 255, 255, 0.9);
       border-radius: 10px;
       padding: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      transition: right 0.5s; /* Smooth transition for sliding in and out */
+      transition: right 0.5s; /* 平滑过渡效果 */
     }
     .toc:hover {
-      right: 0; /* Slide the TOC fully into view on hover */
+      right: 0; /* 悬停时TOC完全显示 */
     }
     .toc a {
       display: block;
@@ -100,34 +114,25 @@
     function updateToc() {
       const toc = document.getElementById('toc');
       toc.innerHTML = '';
-      let activeModules = [];
-      contentData.forEach(({ element }, index) => {
-        const rect = element.getBoundingClientRect();
-        if (rect.top < window.innerHeight && rect.bottom >= 0) {
-          activeModules.push(contentData[index]);
-        }
-      });
 
-      activeModules = activeModules.slice(0, 10); // Show up to 10 items
-      activeModules.forEach(({ title, element }, index) => {
+      const wrappers = document.querySelectorAll('.content-wrapper');
+      wrappers.forEach((wrapper, index) => {
+        const titleElement = wrapper.querySelector('.wrapper-title');
         const tocItem = document.createElement('a');
-        tocItem.href = `#module-${index + 1}`;
-        tocItem.textContent = title;
+        tocItem.href = `#wrapper-${index + 1}`;
+        tocItem.textContent = titleElement.textContent;
         tocItem.addEventListener('click', (event) => {
           event.preventDefault();
-          element.scrollIntoView({ behavior: 'smooth' });
+          wrapper.scrollIntoView({ behavior: 'smooth' });
         });
         toc.appendChild(tocItem);
       });
     }
 
-    let contentData = []; // Store content data for search and TOC
+    let contentData = []; // 存储内容数据用于搜索和TOC
 
     document.addEventListener('DOMContentLoaded', function() {
-      var elems = document.querySelectorAll('.modal');
-      var instances = M.Modal.init(elems);
-
-      // Dynamically load content modules
+      // 动态加载内容模块
       const contentModulesContainer = document.getElementById('content-modules');
 
       fetch('https://api.github.com/repos/YDDLJW/YDDLJW.github.io/contents/posts')
@@ -138,9 +143,13 @@
               const folderWrapper = document.createElement('div');
               folderWrapper.className = 'content-wrapper';
               folderWrapper.id = `wrapper-${folder.name}`;
+              const wrapperFooter = document.createElement('div');
+              wrapperFooter.className = 'wrapper-footer';
               const folderTitle = document.createElement('h4');
+              folderTitle.className = 'wrapper-title';
               folderTitle.textContent = folder.name;
-              folderWrapper.appendChild(folderTitle);
+              wrapperFooter.appendChild(folderTitle);
+              folderWrapper.appendChild(wrapperFooter);
               contentModulesContainer.appendChild(folderWrapper);
 
               return fetch(folder.url)
@@ -152,7 +161,7 @@
                         .then(response => response.text().then(text => ({
                           text,
                           name: file.name,
-                          path: folder.path // Store folder path with file
+                          path: folder.path // 存储文件夹路径
                         })))
                         .then(({ text, name, path }) => {
                           const lines = text.split('\n');
@@ -258,17 +267,6 @@
   <!-- Table of Contents -->
   <div class="toc" id="toc">
     <!-- 目录内容将在这里加载 -->
-  </div>
-
-  <!-- Modal Structure -->
-  <div id="modal1" class="modal">
-    <div class="modal-content">
-      <h4>模态框标题</h4>
-      <p>一些文本内容</p>
-    </div>
-    <div class="modal-footer">
-      <a href="#!" class="modal-close waves-effect waves-green btn-flat">同意</a>
-    </div>
   </div>
 
   <!-- Footer -->
