@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // 初始化背景图片
-  fetch('https://api.github.com/repos/YDDLJW/YDDLJW.github.io/contents/static')
+  fetch('https://api.github.com/repos/YDDLJW/YDDLJW.github.io/contents/static/backgrounds')
     .then(response => response.json())
     .then(data => {
       const images = data.map(file => file.download_url);
