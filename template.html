@@ -228,14 +228,6 @@
             document.getElementById('content').innerHTML = `<p style="color: red;">Error loading content: ${error.message}</p>`;
           });
       }
-
-      // 点击页面其他地方关闭搜索结果
-      document.addEventListener('click', (event) => {
-        const searchResultWrapper = document.getElementById('search-result-wrapper');
-        if (!searchResultWrapper.contains(event.target) && !document.getElementById('searchInput').contains(event.target)) {
-          resetSearch();
-        }
-      });
     });
   </script>
 </body>
