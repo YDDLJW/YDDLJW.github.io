@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
   <link id="favicon" rel="icon" href="">
   <link rel="stylesheet" href="css_template.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/monokai-sublime.min.css">
   <style>
     .content-wrapper {
       background-color: rgba(255, 255, 255, 0.8);
@@ -24,6 +25,7 @@
     }
     .content-detail {
       color: black;
+      width: 100%;
     }
     .toc {
       position: fixed;
@@ -68,6 +70,36 @@
     .night-mode .toc {
       background-color: rgba(50, 50, 50, 0.8);
       color: #d3d3d3;
+    }
+    pre code {
+      display: block;
+      background-color: #2d2d2d; /* Black background for fenced code blocks */
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    code {
+      background-color: #f0f0f0; /* Original background for inline code */
+      padding: 2px 4px;
+      border-radius: 3px;
+    }
+    h1 {
+      font-size: 2em;
+    }
+    h2 {
+      font-size: 1.75em;
+    }
+    h3 {
+      font-size: 1.5em;
+    }
+    h4 {
+      font-size: 1.25em;
+    }
+    h5 {
+      font-size: 1em;
+    }
+    h6 {
+      font-size: 0.875em;
     }
   </style>
 </head>
@@ -132,6 +164,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <!-- Markdown parsing library -->
   <script src="https://cdn.jsdelivr.net/npm/marked@4.0.10/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
   <script src="common.js"></script>
 
   <script>
@@ -152,26 +185,21 @@
             return response.text();
           })
           .then(text => {
-            const lines = text.split('\n');
             const contentDiv = document.getElementById('content');
+            contentDiv.innerHTML = marked.parse(text);
+            document.querySelectorAll('pre code').forEach((block) => {
+              hljs.highlightElement(block);
+            });
+
             const tocDiv = document.getElementById('toc');
             let tocHtml = '';
             let headingId = 0;
 
-            lines.forEach(line => {
-              if (line.startsWith('#')) {
-                const headingText = line.replace(/^#+\s*/, '');
-                headingId++;
-                contentDiv.innerHTML += `<h1 id="heading${headingId}">${headingText}</h1>`;
-                tocHtml += `<a href="#heading${headingId}" id="toc-heading${headingId}">${headingText}</a>`;
-              } else if (line.includes('<img')) {
-                const match = line.match(/src="(.*?)"/);
-                if (match) {
-                  contentDiv.innerHTML += `<img src="${match[1]}" alt="内容图片" style="max-width:600px; max-height:600px; width:auto; height:auto;">`;
-                }
-              } else {
-                contentDiv.innerHTML += `<p>${line}</p>`;
-              }
+            contentDiv.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach((heading) => {
+              headingId++;
+              const headingText = heading.textContent;
+              heading.id = `heading${headingId}`;
+              tocHtml += `<a href="#heading${headingId}" id="toc-heading${headingId}">${headingText}</a>`;
             });
 
             tocDiv.innerHTML = tocHtml;
@@ -179,7 +207,7 @@
             // Update active heading on scroll
             window.addEventListener('scroll', () => {
               let activeId = '';
-              const headings = contentDiv.querySelectorAll('h1');
+              const headings = contentDiv.querySelectorAll('h1, h2, h3, h4, h5, h6');
               headings.forEach(heading => {
                 const rect = heading.getBoundingClientRect();
                 if (rect.top <= 100 && rect.bottom >= 100) {
