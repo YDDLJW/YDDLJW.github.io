@@ -102,7 +102,7 @@
     }
   </style>
   <script>
-    const token = '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';
+    // const token = '';
 
     async function searchContent(query) {
       const searchResultWrapper = document.getElementById('search-result-wrapper');
@@ -116,7 +116,7 @@
       try {
         const response = await fetch('https://api.github.com/repos/YDDLJW/YDDLJW.github.io/contents/posts', {
           headers: {
-            'Authorization': `token ${token}`
+            // 'Authorization': `token ${token}`
           }
         });
         const folders = await response.json();
@@ -125,7 +125,7 @@
           if (folder.type === 'dir') {
             const folderResponse = await fetch(folder.url, {
               headers: {
-                'Authorization': `token ${token}`
+                // 'Authorization': `token ${token}`
               }
             });
             const files = await folderResponse.json();
@@ -219,7 +219,7 @@
 
       fetch('https://api.github.com/repos/YDDLJW/YDDLJW.github.io/contents/posts',{
         headers: {
-          'Authorization': `token ${token}`
+          // 'Authorization': `token ${token}`
         }
       })
         .then(response => response.json())
@@ -240,7 +240,7 @@
 
               return fetch(folder.url, {
                 headers: {
-                  'Authorization': `token ${token}`
+                  // 'Authorization': `token ${token}`
                 }
               })
                 .then(response => response.json())
