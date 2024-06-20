@@ -78,7 +78,7 @@
     .toc {
       position: fixed;
       top: 50%;
-      right: -180px;
+      right: -100px;
       transform: translateY(-50%);
       width: 200px;
       background-color: rgba(255, 255, 255, 0.9);
@@ -100,29 +100,11 @@
       font-weight: bold;
       font-size: 1.1rem;
     }
-    .search-result-wrapper {
-      background-color: rgba(255, 255, 255, 0.95);
-      border-radius: 10px;
-      margin: 20px auto;
-      width: 80%;
-      max-width: 800px;
-      z-index: 2;
-      display: none; /* Initially hidden */
-      flex-direction: column;
-      padding: 20px;
-      position: relative;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      transition: transform 0.5s, margin-top 0.5s; /* Smooth transition effects */
-    }
-    .search-result-title {
-      font-size: 1.5rem;
-      margin: 0 0 10px;
-      text-align: center;
-    }
   </style>
   <script>
-    // JavaScript 部分
-    function searchContent(query) {
+    const token = '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';
+
+    async function searchContent(query) {
       const searchResultWrapper = document.getElementById('search-result-wrapper');
       const searchResultTitle = document.getElementById('search-result-title');
       const searchResults = document.getElementById('search-results');
@@ -130,12 +112,80 @@
       searchResultTitle.textContent = `Searching... ${query}`;
       searchResults.innerHTML = '';
 
-      contentData.forEach(({ title, description, content, element }) => {
-        if (title.toLowerCase().includes(query) || description.toLowerCase().includes(query) || content.toLowerCase().includes(query)) {
-          const clone = element.cloneNode(true);
-          searchResults.appendChild(clone);
+      let found = false;
+      try {
+        const response = await fetch('https://api.github.com/repos/YDDLJW/YDDLJW.github.io/contents/posts', {
+          headers: {
+            'Authorization': `token ${token}`
+          }
+        });
+        const folders = await response.json();
+
+        for (const folder of folders) {
+          if (folder.type === 'dir') {
+            const folderResponse = await fetch(folder.url, {
+              headers: {
+                'Authorization': `token ${token}`
+              }
+            });
+            const files = await folderResponse.json();
+
+            for (const file of files) {
+              if (file.name.endsWith('.md')) {
+                const fileResponse = await fetch(file.download_url);
+                const text = await fileResponse.text();
+
+                if (text.includes(query)) {
+                  const lines = text.split('\n');
+                  let imageSrc = "https://via.placeholder.com/150";
+                  let title = `内容模块 ${file.name}`;
+                  let description = "";
+                  let content = text;
+
+                  for (let line of lines) {
+                    if (line.includes('<img')) {
+                      const match = line.match(/src="(.*?)"/);
+                      if (match) {
+                        imageSrc = match[1];
+                        break;
+                      }
+                    }
+                  }
+
+                  for (let line of lines) {
+                    if (line.startsWith('#')) {
+                      title = line.replace(/^#+\s*/, '');
+                    } else if (line.trim() !== "" && !line.includes('<img')) {
+                      description = line.trim().substring(0, 100) + '...';
+                      break;
+                    }
+                  }
+
+                  const module = document.createElement('a');
+                  module.href = `template.html?folder=${folder.path}&content=${file.name}`;
+                  module.className = 'content-module';
+                  module.id = `module-${file.name}`;
+                  module.innerHTML = `
+                    <img src="${imageSrc}" alt="缩略图">
+                    <div>
+                      <h2>${title}</h2>
+                      <p>${description}</p>
+                    </div>
+                  `;
+                  searchResults.appendChild(module);
+                  found = true;
+                }
+              }
+            }
+          }
         }
-      });
+      } catch (error) {
+        console.error('Error fetching content list:', error);
+      }
+
+      if (!found) {
+        searchResults.innerHTML = '<p>没有检索到关键词</p>';
+      }
 
       searchResultWrapper.style.display = 'flex';
       setTimeout(() => {
@@ -167,7 +217,11 @@
       // 动态加载内容模块
       const contentModulesContainer = document.getElementById('content-modules');
 
-      fetch('https://api.github.com/repos/YDDLJW/YDDLJW.github.io/contents/posts')
+      fetch('https://api.github.com/repos/YDDLJW/YDDLJW.github.io/contents/posts',{
+        headers: {
+          'Authorization': `token ${token}`
+        }
+      })
         .then(response => response.json())
         .then(folders => {
           const folderPromises = folders.map(folder => {
@@ -184,7 +238,11 @@
               folderWrapper.appendChild(wrapperFooter);
               contentModulesContainer.appendChild(folderWrapper);
 
-              return fetch(folder.url)
+              return fetch(folder.url, {
+                headers: {
+                  'Authorization': `token ${token}`
+                }
+              })
                 .then(response => response.json())
                 .then(files => {
                   const filePromises = files.map(file => {
@@ -270,23 +328,19 @@
     }
 
     function handleSearch() {
-      const query = document.getElementById('searchInput').value.toLowerCase();
+      const query = document.getElementById('searchInput').value.trim();
       if (query) {
-        const encodedQuery = encodeURIComponent(query);
-        window.location.href = `index.html?search=${encodedQuery}`;
-      } else {
-        resetSearch();
+        searchContent(query);
       }
     }
 
     function resetSearch() {
-      const searchResultWrapper = document.getElementById('search-result-wrapper');
-      searchResultWrapper.classList.remove('show');
-      searchResultWrapper.classList.add('hide');
-      setTimeout(() => {
-        searchResultWrapper.style.display = 'none';
-        window.location.href = 'index.html';
-      }, 500);
+      document.getElementById('search-result-wrapper').style.display = 'none';
+      document.getElementById('search-result-wrapper').classList.remove('show');
+    }
+
+    function toggleNightMode() {
+      document.body.classList.toggle('night-mode');
     }
   </script>
 </head>

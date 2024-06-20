@@ -28,7 +28,7 @@
     .toc {
       position: fixed;
       top: 50%;
-      right: -180px;
+      right: -100px;
       transform: translateY(-50%);
       width: 200px;
       background-color: rgba(255, 255, 255, 0.9);
@@ -96,6 +96,11 @@
   <div class="container content-wrapper">
     <div class="content-detail" id="content">
       <!-- Markdown内容将在这里加载 -->
+    </div>
+    <!-- 搜索结果容器 -->
+    <div id="search-result-wrapper" class="search-result-wrapper">
+      <h2 id="search-result-title" class="search-result-title"></h2>
+      <div id="search-results"></div>
     </div>
   </div>
 
@@ -195,27 +200,15 @@
             document.getElementById('content').innerHTML = `<p style="color: red;">Error loading content: ${error.message}</p>`;
           });
       }
+
+      // 点击页面其他地方关闭搜索结果
+      document.addEventListener('click', (event) => {
+        const searchResultWrapper = document.getElementById('search-result-wrapper');
+        if (!searchResultWrapper.contains(event.target) && !document.getElementById('searchInput').contains(event.target)) {
+          resetSearch();
+        }
+      });
     });
-
-    function handleKeyDown(event) {
-      if (event.key === 'Enter') {
-        handleSearch();
-      }
-    }
-
-    function handleSearch() {
-      const query = document.getElementById('searchInput').value.toLowerCase();
-      if (query) {
-        const encodedQuery = encodeURIComponent(query);
-        window.location.href = `index.html?search=${encodedQuery}`;
-      } else {
-        resetSearch();
-      }
-    }
-
-    function resetSearch() {
-      window.location.href = 'index.html';
-    }
   </script>
 </body>
 </html>

@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const searchQuery = searchParams.get('search');
   if (searchQuery) {
     document.getElementById('searchInput').value = searchQuery;
-    displaySearchResults(searchQuery);
+    searchContent(searchQuery);
   }
 
   // 初始化背景图片
@@ -36,6 +36,13 @@ document.addEventListener('DOMContentLoaded', function() {
     .catch(error => {
       console.error('Error fetching background images:', error);
     });
+
+  document.addEventListener('click', function(event) {
+    const searchResultWrapper = document.getElementById('search-result-wrapper');
+    if (searchResultWrapper && !searchResultWrapper.contains(event.target) && !event.target.classList.contains('search-input') && !event.target.classList.contains('search-button')) {
+      resetSearch();
+    }
+  });
 });
 
 function toggleNightMode() {
@@ -52,7 +59,7 @@ function handleKeyDown(event) {
 function handleSearch() {
   const query = document.getElementById('searchInput').value.toLowerCase();
   if (query) {
-    window.location.href = `index.html?search=${encodeURIComponent(query)}`;
+    searchContent(query);
   } else {
     resetSearch();
   }
@@ -61,14 +68,14 @@ function handleSearch() {
 function resetSearch() {
   const searchResultWrapper = document.getElementById('search-result-wrapper');
   searchResultWrapper.classList.remove('show');
-  searchResultWrapper.classList.add('hide');
+  searchResultWrapper.classList.remove('fixed');
   setTimeout(() => {
     searchResultWrapper.style.display = 'none';
-    window.location.href = 'index.html';
+    searchResultWrapper.classList.remove('hide');
   }, 500);
 }
 
-function displaySearchResults(query) {
+async function searchContent(query) {
   const searchResultWrapper = document.getElementById('search-result-wrapper');
   const searchResultTitle = document.getElementById('search-result-title');
   const searchResults = document.getElementById('search-results');
@@ -76,13 +83,74 @@ function displaySearchResults(query) {
   searchResultTitle.textContent = `Searching... ${query}`;
   searchResults.innerHTML = '';
 
-  contentData.forEach(({ title, description, content, element }) => {
-    if (title.toLowerCase().includes(query) || description.toLowerCase().includes(query) || content.toLowerCase().includes(query)) {
-      const clone = element.cloneNode(true);
-      searchResults.appendChild(clone);
-    }
-  });
+  let found = false;
+  try {
+    const response = await fetch('https://api.github.com/repos/YDDLJW/YDDLJW.github.io/contents/posts');
+    const folders = await response.json();
 
+    for (const folder of folders) {
+      if (folder.type === 'dir') {
+        const folderResponse = await fetch(folder.url);
+        const files = await folderResponse.json();
+
+        for (const file of files) {
+          if (file.name.endsWith('.md')) {
+            const fileResponse = await fetch(file.download_url);
+            const text = await fileResponse.text();
+
+            if (text.includes(query)) {
+              const lines = text.split('\n');
+              let imageSrc = "https://via.placeholder.com/150";
+              let title = `内容模块 ${file.name}`;
+              let description = "";
+              let content = text;
+
+              for (let line of lines) {
+                if (line.includes('<img')) {
+                  const match = line.match(/src="(.*?)"/);
+                  if (match) {
+                    imageSrc = match[1];
+                    break;
+                  }
+                }
+              }
+
+              for (let line of lines) {
+                if (line.startsWith('#')) {
+                  title = line.replace(/^#+\s*/, '');
+                } else if (line.trim() !== "" && !line.includes('<img')) {
+                  description = line.trim().substring(0, 100) + '...';
+                  break;
+                }
+              }
+
+              const module = document.createElement('a');
+              module.href = `template.html?folder=${folder.path}&content=${file.name}`;
+              module.className = 'content-module search-result';
+              module.id = `module-${file.name}`;
+              module.innerHTML = `
+                <img src="${imageSrc}" alt="缩略图">
+                <div>
+                  <h2>${title}</h2>
+                  <p>${description}</p>
+                </div>
+              `;
+              searchResults.appendChild(module);
+              found = true;
+            }
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching content list:', error);
+  }
+
+  if (!found) {
+    searchResults.innerHTML = '<p>没有检索到关键词</p>';
+  }
+
+  searchResultWrapper.classList.add('fixed');
   searchResultWrapper.style.display = 'flex';
   setTimeout(() => {
     searchResultWrapper.classList.add('show');
