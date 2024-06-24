@@ -222,10 +222,14 @@
 
                       for (let line of lines) {
                         if (line.startsWith('#')) {
-                          title = line.replace(/^#+\s*/, '');
+                        title = line.replace(/^#+\s*/, '');
                         } else if (line.trim() !== "" && !line.includes('<img')) {
-                          description = line.trim().substring(0, 100) + '...';
+                          if (description.length + line.trim().length <= 100) {
+                          description += line.trim() + ' ';
+                        } else {
+                          description += line.trim().substring(0, 100 - description.length) + '...';
                           break;
+                          }
                         }
                       }
 
