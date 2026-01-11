@@ -1,4 +1,5 @@
-﻿<!doctype html>
+﻿<!-- index.html -->
+<!doctype html>
 <html lang="zh-CN">
 <head>
     <meta charset="utf-8" />
@@ -80,6 +81,7 @@
                 <button class="tab active" data-tab-btn="contract" role="tab" aria-selected="true">合约</button>
                 <button class="tab" data-tab-btn="options" role="tab" aria-selected="false">期权</button>
                 <button class="tab" data-tab-btn="spot" role="tab" aria-selected="false">现货</button>
+                <button class="tab" data-tab-btn="onchain" role="tab" aria-selected="false">链上</button>
             </div>
 
             <div class="cardTitleRow">
@@ -152,6 +154,13 @@
 
                 <div class="hint">
                     现货预设交易所：Binance。时间范围规则：5m 预设拉取过去 2h；1h 预设拉取过去 12h。抓取包含：现货价格K线 + 订单簿历史（热力图数据）。
+                </div>
+            </div>
+
+            <!-- 链上分页内容（无参数） -->
+            <div data-tab-panel="onchain" hidden>
+                <div class="hint">
+                    链上抓取（无参数）：交易所余额列表（/api/exchange/balance/list）+ 交易所资产透明度证明（/api/exchange_assets_transparency/list）。
                 </div>
             </div>
 
