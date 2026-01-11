@@ -1,0 +1,180 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <title>CoinGlass 市场分析</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+    <header class="appHeader">
+        <div class="headerInner">
+            <div class="titleWrap">
+                <div class="appTitle">CoinGlass 市场分析</div>
+                <div class="appSub">抓取（精简）→ 分阶段分析 → 对话</div>
+            </div>
+
+            <div class="toolbar">
+                <button id="fetchBtn" class="btn btn-primary">抓取数据</button>
+                <button id="fetchAllBtn" class="btn btn-primary">一键抓取全部</button>
+                <button id="analyzeBtn" class="btn btn-primary">一键分析</button>
+                <button id="downloadBtn" class="btn" disabled>下载 JSON</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- GPT 分析（置顶、显眼） -->
+        <section class="card highlight">
+            <div class="cardTitleRow">
+                <h2 class="cardTitle">GPT 市场分析</h2>
+                <div id="analysisProgress" class="pill pill-blue"></div>
+            </div>
+
+            <div id="analysisViewport" class="viewport">
+                <div id="analysisRendered" class="md">尚未分析</div>
+            </div>
+
+            <div class="chatRow">
+                <input id="chatInput" class="input" placeholder="继续提问（基于当前数据与分析）" />
+                <button id="chatSendBtn" class="btn btn-primary">发送</button>
+            </div>
+        </section>
+
+        <!-- API Keys -->
+        <section class="card">
+            <div class="cardTitleRow">
+                <h2 class="cardTitle">API Keys</h2>
+                <div class="rightMeta">
+                    <span id="cgKeyStatus" class="pill"></span>
+                    <span id="gptKeyStatus" class="pill"></span>
+                </div>
+            </div>
+
+            <div class="keyGrid">
+                <div class="keyBox">
+                    <label class="label" for="apiKey">CoinGlass API Key</label>
+                    <div class="row">
+                        <input id="apiKey" class="input" type="password" placeholder="CoinGlass API Key" />
+                        <button id="saveKeyBtn" class="btn">保存</button>
+                    </div>
+                </div>
+
+                <div class="keyBox">
+                    <label class="label" for="gptApiKey">GPT API Key</label>
+                    <div class="row">
+                        <input id="gptApiKey" class="input" type="password" placeholder="sk-..." />
+                        <button id="saveGptKeyBtn" class="btn">保存</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 参数 + 抓取进度 -->
+        <section class="card">
+            <div class="tabBar" role="tablist" aria-label="参数分页">
+                <button class="tab active" data-tab-btn="contract" role="tab" aria-selected="true">合约</button>
+                <button class="tab" data-tab-btn="options" role="tab" aria-selected="false">期权</button>
+                <button class="tab" data-tab-btn="spot" role="tab" aria-selected="false">现货</button>
+            </div>
+
+            <div class="cardTitleRow">
+                <h2 class="cardTitle">参数</h2>
+                <div id="progressText" class="pill"></div>
+            </div>
+
+            <!-- 合约分页内容 -->
+            <div data-tab-panel="contract">
+                <div class="grid">
+                    <div>
+                        <label class="label" for="pairSelect">交易对</label>
+                        <select id="pairSelect" class="select">
+                            <option value="BTCUSDT">BTCUSDT</option>
+                            <option value="ETHUSDT">ETHUSDT</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="label" for="rangeSelect">时间间隔</label>
+                        <select id="rangeSelect" class="select">
+                            <option value="1h">1 小时</option>
+                            <option value="4h">4 小时</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="hint">
+                    固定抓取过去 24 小时数据；你选择的是K线/序列的时间间隔（1h 或 4h）。精简抓取：价格K线 + 聚合OI + Funding + 主动买卖比（24h）；均线在本地由K线计算。
+                </div>
+            </div>
+
+            <!-- 期权分页内容 -->
+            <div data-tab-panel="options" hidden>
+                <div class="grid">
+                    <div>
+                        <label class="label" for="optionSymbolSelect">交易币种</label>
+                        <select id="optionSymbolSelect" class="select">
+                            <option value="BTC">BTC</option>
+                            <option value="ETH">ETH</option>
+                        </select>
+                    </div>
+                    <div></div>
+                </div>
+
+                <div class="hint">
+                    期权抓取：Option Info（按币种一次请求）+ Max Pain（按币种、对每个支持交易所分别请求一次），并汇总为一个 JSON 预览与下载。
+                </div>
+            </div>
+
+            <!-- 现货分页内容 -->
+            <div data-tab-panel="spot" hidden>
+                <div class="grid">
+                    <div>
+                        <label class="label" for="spotSymbolSelect">交易对</label>
+                        <select id="spotSymbolSelect" class="select">
+                            <option value="BTCUSDT">BTCUSDT</option>
+                            <option value="ETCUSDT">ETCUSDT</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="label" for="spotIntervalSelect">时间间隔</label>
+                        <select id="spotIntervalSelect" class="select">
+                            <option value="5m">5 分钟</option>
+                            <option value="1h">1 小时</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="hint">
+                    现货预设交易所：Binance。时间范围规则：5m 预设拉取过去 2h；1h 预设拉取过去 12h。抓取包含：现货价格K线 + 订单簿历史（热力图数据）。
+                </div>
+            </div>
+
+            <div id="errorBox" class="error" hidden></div>
+        </section>
+
+        <!-- CoinGlass 原始 JSON（固定高度、可滚动窗口） -->
+        <section class="card">
+            <div class="cardTitleRow">
+                <h2 class="cardTitle">CoinGlass 原始数据（预览）</h2>
+                <div class="rightMeta">
+                    <button id="copyJsonBtn" class="btn">复制</button>
+                    <div class="pill">固定窗口内滚动查看</div>
+                </div>
+            </div>
+
+            <div id="jsonViewport" class="viewport">
+                <pre id="results" class="json"></pre>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
